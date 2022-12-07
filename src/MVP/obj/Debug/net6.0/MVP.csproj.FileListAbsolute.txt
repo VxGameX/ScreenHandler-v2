@@ -1,0 +1,17 @@
+/Users/omar.nunez/Downloads/MVP/src/MVP/bin/Debug/net6.0/MVP
+/Users/omar.nunez/Downloads/MVP/src/MVP/bin/Debug/net6.0/MVP.deps.json
+/Users/omar.nunez/Downloads/MVP/src/MVP/bin/Debug/net6.0/MVP.runtimeconfig.json
+/Users/omar.nunez/Downloads/MVP/src/MVP/bin/Debug/net6.0/MVP.dll
+/Users/omar.nunez/Downloads/MVP/src/MVP/bin/Debug/net6.0/MVP.pdb
+/Users/omar.nunez/Downloads/MVP/src/MVP/bin/Debug/net6.0/Newtonsoft.Json.dll
+/Users/omar.nunez/Downloads/MVP/src/MVP/obj/Debug/net6.0/MVP.csproj.AssemblyReference.cache
+/Users/omar.nunez/Downloads/MVP/src/MVP/obj/Debug/net6.0/MVP.GeneratedMSBuildEditorConfig.editorconfig
+/Users/omar.nunez/Downloads/MVP/src/MVP/obj/Debug/net6.0/MVP.AssemblyInfoInputs.cache
+/Users/omar.nunez/Downloads/MVP/src/MVP/obj/Debug/net6.0/MVP.AssemblyInfo.cs
+/Users/omar.nunez/Downloads/MVP/src/MVP/obj/Debug/net6.0/MVP.csproj.CoreCompileInputs.cache
+/Users/omar.nunez/Downloads/MVP/src/MVP/obj/Debug/net6.0/MVP.csproj.CopyComplete
+/Users/omar.nunez/Downloads/MVP/src/MVP/obj/Debug/net6.0/MVP.dll
+/Users/omar.nunez/Downloads/MVP/src/MVP/obj/Debug/net6.0/refint/MVP.dll
+/Users/omar.nunez/Downloads/MVP/src/MVP/obj/Debug/net6.0/MVP.pdb
+/Users/omar.nunez/Downloads/MVP/src/MVP/obj/Debug/net6.0/MVP.genruntimeconfig.cache
+/Users/omar.nunez/Downloads/MVP/src/MVP/obj/Debug/net6.0/ref/MVP.dll
