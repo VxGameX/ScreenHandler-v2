@@ -1,47 +1,64 @@
 using MVP.Settings;
 using Newtonsoft.Json;
 
-namespace MVP.Configuration
+namespace MVP.Configuration;
+
+public class ScreenHandlerBuilder : IScreenHandlerBuilder
 {
-    public class ScreenHandlerBuilder // : IScreenHandlerBuilder
+    private ScreenHandler _screenHandler;
+
+    public ScreenHandlerBuilder()
     {
-        private ScreenHandler _screenHandler;
-        private string _entryPoint;
+        _screenHandler = new();
+    }
 
-        public ScreenHandlerBuilder()
+    public ScreenHandler Build() => _screenHandler;
+
+    public ScreenHandlerBuilder RegisterSingleScreen(string path)
+    {
+        using (var file = new StreamReader(path))
         {
-            _screenHandler = new();
-            _screenHandler.configFiles = new List<ConfigFile>();
-        }
+            var json = file.ReadToEnd().Trim();
+            var newScreen = JsonConvert.DeserializeObject<ConfigFile>(json);
+            if (newScreen is null)
+                throw new Exception($"Could not find any screen file on path {path}");
 
-        public ScreenHandler Build() => _screenHandler;
+            var (isRegistered, screen) = _screenHandler.ScreenValidation(newScreen.Id);
+            if (isRegistered)
+                throw new Exception($"Screen ID {newScreen.Id} is already registered.");
 
-        public ScreenHandlerBuilder AddFile(string path)
-        {
-            using (var file = new StreamReader(path))
-            {
-                var newFile = JsonConvert.DeserializeObject<ConfigFile>(file.ReadToEnd());
-                if (newFile is null)
-                    throw new Exception($"Could not find any configuration file on path ({path}))");
-
-                _screenHandler.configFiles.Add(newFile);
-                return this;
-            }
-        }
-
-        public ScreenHandlerBuilder SetEntryPoint(string fileId)
-        {
-            var entryPoint = JsonConvert.DeserializeObject<ConfigFile>(fileId)!;
-            _screenHandler.entryPoint = entryPoint;
+            _screenHandler.screens.Add(newScreen);
             return this;
         }
+    }
 
-        // public ScreenHandlerBuilder SetFields(IEnumerable<Field> fields)
-        // {
-        //     var name = new List<string>(fields);
-        // }
-        // public ScreenHandlerBuilder SetActions(IEnumerable<MVP.Settings.Action> actions)
-        // {
-        // }
+    public ScreenHandlerBuilder RegisterMultipleScreens(string path)
+    {
+        using (var file = new StreamReader(path))
+        {
+            var json = file.ReadToEnd().Trim();
+            var newScreens = JsonConvert.DeserializeObject<IEnumerable<ConfigFile>>(json);
+            if (newScreens is null)
+                throw new Exception($"Could not find any screen file on path {path})");
+
+            var (isRegistered, existingScreen) = _screenHandler.ScreenValidation(newScreens);
+            if (isRegistered)
+                throw new Exception($"Screen ID {existingScreen.Id} is already registered.");
+
+            foreach (var screen in newScreens)
+                _screenHandler.screens.Add(screen);
+
+            return this;
+        }
+    }
+
+    public ScreenHandlerBuilder SetEntryPoint(string screenId)
+    {
+        var (isValid, entryPoint) = _screenHandler.ScreenValidation(screenId);
+        if (!isValid)
+            throw new Exception($"Cannot set entry point. Screen ({screenId}) not registered.");
+
+        _screenHandler.entryPoint = entryPoint;
+        return this;
     }
 }
