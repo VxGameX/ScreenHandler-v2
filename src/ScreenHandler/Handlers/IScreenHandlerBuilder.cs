@@ -1,4 +1,4 @@
-namespace MVP.Configuration;
+namespace ScreenHandler.Handlers;
 
 public interface IScreenHandlerBuilder
 {

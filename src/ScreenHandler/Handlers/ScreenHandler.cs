@@ -1,6 +1,6 @@
-using MVP.Settings;
+using ScreenHandler.Settings;
 
-namespace MVP.Configuration;
+namespace ScreenHandler.Handlers;
 
 public class ScreenHandler : IScreenHandler
 {
@@ -10,17 +10,24 @@ public class ScreenHandler : IScreenHandler
 
     public ScreenHandler() => screens = new List<ConfigFile>();
 
-    public ScreenHandler NextScreen()
+    public ScreenHandler Start()
     {
-        var nextScreenIndex = screens.IndexOf(_currentScreen) + 1;
-        var nextScreenId = screens[nextScreenIndex].Id;
-        ShowScreen(nextScreenId);
+        _currentScreen = entryPoint;
+        NextScreen(_currentScreen.Id);
+
         return this;
     }
 
-    public ScreenHandler ShowScreen(string screenId)
+    // public ScreenHandler NextScreen()
+    // {
+    //     var nextScreenIndex = screens.IndexOf(_currentScreen) + 1;
+    //     var nextScreenId = screens[nextScreenIndex].Id;
+    //     NextScreen(nextScreenId);
+    //     return this;
+    // }
+
+    public ScreenHandler NextScreen(string screenId)
     {
-        ClearScreen();
         var (isValid, screen) = ScreenValidation(screenId);
         if (!isValid)
             throw new Exception($"Cannot show screen ({screenId}) because it is not registered.");
@@ -51,25 +58,28 @@ public class ScreenHandler : IScreenHandler
 
     private void SetCurrentScreen(ConfigFile screen) => _currentScreen = screen;
 
-    private static void ShowFields(ConfigFile file)
+    private static void ShowFields(ConfigFile screen)
     {
-        foreach (var field in file.Fields)
+        foreach (var field in screen.Fields)
             do
             {
-                ShowTitle(file.Title);
+                ClearScreen(screen.Title);
                 Console.Write($"{(field.Required ? "*" : string.Empty)}{field.Name}\n>> ");
                 var answer = Console.ReadLine();
 
-                if (string.IsNullOrWhiteSpace(answer) && field.Required)
-                {
-                    Console.Clear();
-                    Console.WriteLine("Cannot leave required (*) fields empty.");
-                    continue;
-                }
-                break;
+                if (IsValidAnswer(field, answer))
+                    break;
+
+                ClearScreen(screen.Title);
+                Console.Write("Cannot leave required (*) fields empty.");
+                Pause();
             }
             while (true);
     }
+
+    private static void Pause() => Console.ReadKey();
+
+    private static bool IsValidAnswer(Section field, string? answer) => !(string.IsNullOrWhiteSpace(answer) && field.Required);
 
     private static void CentralizeTitle(string title)
     {
@@ -77,19 +87,23 @@ public class ScreenHandler : IScreenHandler
         Console.WriteLine(title);
     }
 
-    private static void SetTitle(Title title) => Console.Title = title.Display;
+    private static void SetTitle(Title title) => Console.Title = title.Label;
 
     private static void ShowTitle(Title title)
     {
         if (title.Centralized)
         {
-            CentralizeTitle(title.Display);
+            CentralizeTitle(title.Label);
             return;
         }
-        ShowTitle(title.Display);
+        ShowTitle(title.Label);
     }
 
     private static void ShowTitle(string title) => Console.WriteLine(title);
 
-    private static void ClearScreen() => Console.Clear();
+    private static void ClearScreen(Title title)
+    {
+        Console.Clear();
+        ShowTitle(title);
+    }
 }

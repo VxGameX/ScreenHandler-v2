@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "RnSLXmlrEg8gl23n2oipQq7O2FgizIKnY12HoF5PCkhnhjU9oImfDv5I6t8BlXOiDIoIMXkF0i9ec8ryfhm1Hw==",
+  "success": true,
+  "projectFilePath": "/Users/omar.nunez/Projects/ScreenHandler/ScreenHandler/src/ScreenHandler/ScreenHandler.csproj",
+  "expectedPackageFiles": [
+    "/Users/omar.nunez/.nuget/packages/newtonsoft.json/13.0.2/newtonsoft.json.13.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}

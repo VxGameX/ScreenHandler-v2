@@ -1,6 +1,9 @@
 {
     "id": "mainScreen",
-    "title": "Encuenta Amos de Llaves",
+    "title": {
+        "display": "Encuesta Amos de Llaves",
+        "centralized": true
+    },
     "fields": [
         { "name": "¿Cree usted que los hombres deban quedarse en casa?", "type": "string", "required": true },
         { "name": "¿Cree usted que los hombres deban realizar los quehaceres del hogar?", "type": "string", "required": true },

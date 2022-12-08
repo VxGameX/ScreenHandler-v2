@@ -1,7 +1,7 @@
-using MVP.Settings;
+using ScreenHandler.Settings;
 using Newtonsoft.Json;
 
-namespace MVP.Configuration;
+namespace ScreenHandler.Handlers;
 
 public class ScreenHandlerBuilder : IScreenHandlerBuilder
 {
