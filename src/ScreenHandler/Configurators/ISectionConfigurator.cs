@@ -1,10 +1,8 @@
-using ScreenHandler.Settings;
-
 namespace ScreenHandler.Configurators;
 
 public interface ISectionConfigurator
 {
-    ISectionConfigurator SetEntryPoint(Section entryPoint);
-    ISectionConfigurator SetNextSection(Section nextSection);
-    ISectionConfigurator SetSectionsOrder(params string[] sectionsId);
+    ISectionConfigurator SetEntryPoint(string sectionsId);
+    ISectionConfigurator SetNextSection(string sectionsId);
+    void SaveOrderSettings();
 }

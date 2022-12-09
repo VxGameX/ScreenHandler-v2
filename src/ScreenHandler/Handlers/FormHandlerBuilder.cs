@@ -6,12 +6,12 @@ namespace ScreenHandler.Handlers;
 
 public sealed class FormHandlerBuilder : IFormHandlerBuilder
 {
-    private static IList<ConfigFile> _registeredForms = new List<ConfigFile>();
-    private IList<Section> _formSections;
+    public ConfigFile Form { get; set; }
+    public ICollection<Section> FormSections { get; set; }
 
     public FormHandlerBuilder(string formPath)
     {
-        _formSections = new List<Section>();
+        FormSections = new List<Section>();
 
         using (var file = new StreamReader(formPath))
         {
@@ -24,18 +24,48 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
             var isRegistered = IsFormRegistered(newForm.Id);
             if (isRegistered)
                 throw new Exception($"Screen ID {newForm.Id} is already registered.");
+
+            Form = newForm;
+            // TODO: Set sections validation bedore assign
+            FormSections = Form.Sections!.ToList();
         }
     }
 
-    public IFormHandler Build() => new FormHandler(this);
+    public IFormHandler Build() => new FormHandler(Form, FormSections);
 
-    public ISectionConfigurator SetSectionsOrder() => new SectionConfigurator();
+    public ISectionConfigurator SetSectionsOrder() => new SectionConfigurator(this);
 
-    private bool IsFormRegistered(string formId)
+    private bool IsFormEmpty(ConfigFile form)
     {
-        var form = _registeredForms.FirstOrDefault(c => c.Id == formId);
-        if (form is null)
-            return false;
+        if (form.Sections is null)
+            return true;
+
+        if (form.Sections.FirstOrDefault() is null)
+            return true;
+
+        return false;
+    }
+
+    public bool IsFormRegistered(string formId)
+    {
+        // var form = _registeredForms.FirstOrDefault(c => c.Id == formId);
+        // if (form is null)
+        //     return false;
+        return false;
+    }
+
+    public bool IsFormRegistered(ConfigFile form)
+    {
+        // if (!_registeredForms.Contains(form))
+        //     return false;
+        return true;
+    }
+
+    public bool IsFormValid(ConfigFile form)
+    {
+        if (IsFormEmpty(form))
+            throw new Exception("Form does not contains sections");
+
         return true;
     }
 }

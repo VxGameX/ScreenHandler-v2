@@ -4,7 +4,7 @@ namespace ScreenHandler.Handlers;
 
 public partial class ScreenHandler : IScreenHandler
 {
-    public IList<ConfigFile> screens { get; set; }
+    public ICollection<ConfigFile> screens { get; set; }
     public ConfigFile entryPoint { get; set; } = null!;
     private ConfigFile _currentScreen = null!;
 

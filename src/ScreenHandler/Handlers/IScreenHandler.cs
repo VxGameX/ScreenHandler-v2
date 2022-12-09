@@ -4,7 +4,7 @@ namespace ScreenHandler.Handlers;
 
 public interface IScreenHandler
 {
-    IList<ConfigFile> screens { get; set; }
+    ICollection<ConfigFile> screens { get; set; }
     ConfigFile entryPoint { get; set; }
 
     ScreenHandler NextScreen(string screenId);

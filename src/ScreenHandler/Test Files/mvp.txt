@@ -1,5 +1,5 @@
 Nombres, Apellidos y Edad -> Almacenar en RAM, con un ID auto incr
-private static IList<Person> people = new...;
+private static ICollection<Person> people = new...;
 main () {
   centralizeTo("Captura de Personas", 80);
   write("Nombres: ");
