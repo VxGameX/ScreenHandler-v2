@@ -2,7 +2,7 @@ using ScreenHandler.Settings;
 
 namespace ScreenHandler.Handlers;
 
-public class ScreenHandler : IScreenHandler
+public partial class ScreenHandler : IScreenHandler
 {
     public IList<ConfigFile> screens { get; set; }
     public ConfigFile entryPoint { get; set; } = null!;
@@ -10,7 +10,9 @@ public class ScreenHandler : IScreenHandler
 
     public ScreenHandler() => screens = new List<ConfigFile>();
 
-    public ScreenHandler Start()
+    public static IScreenHandlerBuilder CreateBuilder() => new ScreenHandlerBuilder();
+
+    public ScreenHandler Run()
     {
         _currentScreen = entryPoint;
         NextScreen(_currentScreen.Id);
@@ -60,14 +62,14 @@ public class ScreenHandler : IScreenHandler
 
     private static void ShowFields(ConfigFile screen)
     {
-        foreach (var field in screen.Fields)
+        foreach (var section in screen.Sections!)
             do
             {
                 ClearScreen(screen.Title);
-                Console.Write($"{(field.Required ? "*" : string.Empty)}{field.Name}\n>> ");
+                Console.Write($"{(section.Required ? "*" : string.Empty)}{section.Label}\n>> ");
                 var answer = Console.ReadLine();
 
-                if (IsValidAnswer(field, answer))
+                if (IsValidAnswer(section, answer))
                     break;
 
                 ClearScreen(screen.Title);

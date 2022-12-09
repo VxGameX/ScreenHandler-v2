@@ -9,7 +9,7 @@ public class ScreenHandlerBuilder : IScreenHandlerBuilder
 
     public ScreenHandlerBuilder() => _screenHandler = new();
 
-    public ScreenHandler Build() => _screenHandler;
+    public IScreenHandler Build() => _screenHandler;
 
     public ScreenHandlerBuilder RegisterSingleScreen(string path)
     {

@@ -7,6 +7,7 @@
     "foregroundColor": "white",
     "backgroundColor": "black"
   },
+  "description": "Order requests!",
   "sections": [
     {
       "id": "1",

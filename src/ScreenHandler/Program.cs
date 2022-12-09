@@ -1,13 +1,8 @@
-﻿using ScreenHandler.ScreenHandler;
+﻿using ScreenHandler.Handlers;
 
-var builder = new ScreenHandlerBuilder();
+var ordersFormBuilder = FormHandler.CreateBuilder("/Users/omar.nunez/Projects/ScreenHandler/ScreenHandler/src/ScreenHandler/Test Files/form.json");
+ordersFormBuilder.
 
-builder.RegisterSingleScreen("/Users/omar.nunez/Projects/ScreenHandler/ScreenHandler/src/ScreenHandler/Test Files/form.json")
-    .RegisterMultipleScreens("/Users/omar.nunez/Projects/ScreenHandler/ScreenHandler/src/ScreenHandler/Test Files/multipleScreens.json")
-    .SetEntryPoint("mainScreen");
+var ordersForm = ordersFormBuilder.Build();
 
-var app = builder.Build();
-
-app.Start()
-    .NextScreen("randomScreen")
-    .NextScreen("entrevistadoScreen");
+ordersForm.Start();
