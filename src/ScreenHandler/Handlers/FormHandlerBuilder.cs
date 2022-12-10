@@ -33,7 +33,7 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
 
     public IFormHandler Build() => new FormHandler(Form, FormSections);
 
-    public ISectionConfigurator SetSectionsOrder() => new SectionConfigurator(this);
+    public ISectionConfigurator SectionsSettings() => new SectionConfigurator(this);
 
     private bool IsFormEmpty(ConfigFile form)
     {

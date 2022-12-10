@@ -13,7 +13,7 @@
       {
         "label": "Are you a new or existing customer?",
         "input": {
-          "type": "bullet",
+          "type": "radiobutton",
           "options": ["I am a new customer", "I am an existing customer"]
         },
         "required": false

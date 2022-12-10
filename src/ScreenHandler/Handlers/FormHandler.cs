@@ -44,7 +44,10 @@ public sealed class FormHandler : IFormHandler
             // IsFormValid(_form);
 
             foreach (var section in _form.Sections!)
+            {
+                ShowTitle();
                 ShowSection(section);
+            }
         }
         catch (Exception e)
         {
@@ -64,68 +67,98 @@ public sealed class FormHandler : IFormHandler
 
     private void SetCurrentSection(Section section) => _currentSection = section;
 
-    private static void ShowSection(Section section)
+    private void ShowSection(Section section)
     {
         do
         {
-            ClearScreen(section.Label);
+            ClearScreen();
             // TODO: Set required mark to RED
             ShowLabel(section);
             // Checks if section has options
-            if (section.Input.Options is not null)
-                ShowOptions(section);
+            if (section.Input.Options is null)
+            {
+                Console.Write("\n>> ");
+                // TODO: Add TEXT, INT and FLOAT validations according to input type
+                var answer = Console.ReadLine();
 
-            Console.Write("\n>> ");
-            // TODO: Add TEXT, INT and FLOAT validations according to input type
-            var answer = Console.ReadLine();
+                if (IsValidAnswer(section, answer))
+                    break;
 
-            if (IsValidAnswer(section, answer))
-                break;
+                ClearScreen();
 
-            ClearScreen(section.Label);
-
-            // TODO: Export to IFormAnswerValidator
-            Console.Write("Cannot leave required (*) fields empty.");
-            Pause();
+                // TODO: Create AnswerValidator
+                Console.Write("Cannot leave required (*) fields empty.");
+                Pause();
+                continue;
+            }
+            ShowOptions(section);
+            break;
         }
         while (true);
     }
 
-    private static void ShowOptions(Section section)
+    private static void SelectOption(Input input)
     {
+        if (!int.TryParse(Console.ReadLine(), out int selectedOption))
+            throw new NotImplementedException("Could not parse selected option");
+
+        if (input.SelectedOptions is null)
+            input.SelectedOptions = new List<int>();
+
+        input.SelectedOptions.Add(selectedOption);
+    }
+
+    private void ShowOptions(Section section)
+    {
+        var counter = 1;
         switch (section.Input.Type)
         {
-            case "bullet":
+            case "radiobutton":
+                counter = 1;
                 foreach (var option in section.Input.Options!)
                 {
                     var selectedOption = 0;
                     if (section.Input.SelectedOptions is not null)
                         selectedOption = section.Input.SelectedOptions.FirstOrDefault();
 
-                    Console.WriteLine($"({(selectedOption != (option.IndexOf(option) + 1) ? string.Empty : "X")}) {option}");
+                    Console.WriteLine($"{counter++} - ({(selectedOption != (section.Input.Options.IndexOf(option) + 1) ? string.Empty : "X")}) {option}");
                 }
                 break;
             case "checkbox":
-                foreach (var option in section.Input.Options!)
+                do
                 {
-                    var selectedOption = 0;
-                    if (section.Input.SelectedOptions is not null)
-                        selectedOption = section.Input.SelectedOptions.FirstOrDefault(op => op == (option.IndexOf(option) + 1));
+                    counter = 1;
+                    ClearScreen();
+                    foreach (var option in section.Input.Options!)
+                    {
+                        var selectedOption = 0;
+                        if (section.Input.SelectedOptions is not null)
+                            selectedOption = section.Input.SelectedOptions.FirstOrDefault(op => op == (section.Input.Options.IndexOf(option) + 1));
 
-                    Console.WriteLine($"[{(selectedOption is 0 ? string.Empty : "X")}] {option}");
-                }
+                        Console.WriteLine($"{counter++} - [{(selectedOption is 0 ? " " : "X")}] {option}");
+                    }
+
+                    if (!section.Required)
+                        Console.WriteLine("\n* Press any key to select another option or Enter to continue to the next section");
+
+                    if (Console.ReadKey().Key == ConsoleKey.Enter)
+                        break;
+
+                    Console.Write(">> ");
+                    SelectOption(section.Input);
+                } while (true);
                 break;
             default:
                 break;
         }
     }
 
-    private static void ShowLabel(Section section) => Console.Write($"{section.Label} {(section.Required ? "*" : string.Empty)}\n>> ");
+    private static void ShowLabel(Section section) => Console.WriteLine($"{section.Label} {(section.Required ? "*" : string.Empty)}");
 
     private static void Pause() => Console.ReadKey();
 
     // TODO: Export function to IFormAnswerValidator
-    private static bool IsValidAnswer(Section field, string? answer) => !(string.IsNullOrWhiteSpace(answer) && field.Required);
+    private static bool IsValidAnswer(Section section, string? answer) => !(string.IsNullOrWhiteSpace(answer) && section.Required);
 
     private static void CentralizeTitle(string title)
     {
@@ -135,19 +168,21 @@ public sealed class FormHandler : IFormHandler
 
     private static void SetTitle(Title title) => Console.Title = title.Label;
 
-    private static void ShowTitle(Title title)
+    private void ShowTitle()
     {
-        if (title.Centralized)
+        if (_form.Title.Centralized)
         {
-            CentralizeTitle(title.Label);
+            CentralizeTitle(_form.Title.Label);
             return;
         }
-        ShowTitle(title.Label);
+        ShowTitle(_form.Title.Label);
     }
 
     private static void ShowTitle(string title) => Console.WriteLine(title);
 
-    private static void ClearScreen(string sectionLabel)
+    private void ClearScreen()
     {
+        Console.Clear();
+        ShowTitle();
     }
 }

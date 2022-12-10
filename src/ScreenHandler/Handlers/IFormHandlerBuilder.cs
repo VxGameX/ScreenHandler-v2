@@ -6,5 +6,5 @@ namespace ScreenHandler.Handlers;
 public interface IFormHandlerBuilder
 {
     IFormHandler Build();
-    ISectionConfigurator SetSectionsOrder();
+    ISectionConfigurator SectionsSettings();
 }

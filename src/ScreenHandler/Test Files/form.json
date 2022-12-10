@@ -13,14 +13,14 @@
       "id": "1",
       "label": "Are you a new or existing customer?",
       "input": {
-        "type": "bullet",
+        "type": "radiobutton",
         "options": ["I am a new customer", "I am an existing customer"]
       },
       "required": false
     },
     {
       "id": "2",
-      "label": "What is the item you would liket to order?",
+      "label": "What is the item you would like to order?",
       "input": {
         "type": "int"
       },
@@ -28,7 +28,7 @@
     },
     {
       "id": "3",
-      "label": "What color(s) would you like to order",
+      "label": "What color(s) would you like to order?",
       "input": {
         "type": "checkbox",
         "options": ["color 1", "color 2", "color 3", "color 4"]
