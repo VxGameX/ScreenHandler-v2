@@ -77,7 +77,7 @@ public sealed class FormHandler : IFormHandler
             // Checks if section has options
             if (section.Input.Options is null)
             {
-                Console.Write("\n>> ");
+                Console.Write(">> ");
                 // TODO: Add TEXT, INT and FLOAT validations according to input type
                 var answer = Console.ReadLine();
 
@@ -103,23 +103,48 @@ public sealed class FormHandler : IFormHandler
             input.SelectedOptions = new List<int>();
 
         if (!required || input.SelectedOptions?.FirstOrDefault() != 0)
-            Console.WriteLine("* (N)ext section");
+            Console.WriteLine("\n* (N)ext section");
 
         Console.Write("\n>> ");
-        var option = Console.ReadLine() ?? string.Empty;
+        var option = Console.ReadLine()?
+            .ToLower()
+            .Trim() ?? string.Empty;
 
+        return IsOptionValid(input, required, counter, option);
+    }
+
+    private bool IsOptionValid(Input input, bool required, int counter, string option)
+    {
         if (!int.TryParse(option, out int selectedOption))
         {
-            ClearScreen();
-            Console.WriteLine($"You must select a valid option (1-{counter}) or press N if allowed.");
-            Pause();
-            return false;
+            switch (option)
+            {
+                case "n":
+                    if (required && input.SelectedOptions?.FirstOrDefault() == 0)
+                    {
+                        ClearScreen();
+                        Console.Write("Cannot leave required (*) sections empty.");
+                        Pause();
+                        return false;
+                    }
+                    return true;
+                case "":
+                    ClearScreen();
+                    Console.Write("To continue you must press N when prompted.");
+                    Pause();
+                    return false;
+                default:
+                    ClearScreen();
+                    Console.Write($"You must select a valid option (1-{counter - 1}) or press N if allowed.");
+                    Pause();
+                    return false;
+            }
         }
-        
+
         if (selectedOption < 1 || selectedOption > input.Options!.Count)
         {
             ClearScreen();
-            Console.WriteLine($"You must select a valid option (1-{counter}) or press N if allowed.");
+            Console.Write($"You must select a valid option (1-{counter - 1}) or press N if allowed.");
             Pause();
             return false;
         }
@@ -137,33 +162,7 @@ public sealed class FormHandler : IFormHandler
                 input.SelectedOptions!.Remove(radioOption);
         }
         input.SelectedOptions!.Add(selectedOption);
-
-        switch (option.ToLower())
-        {
-            case "n":
-                if (required && input.SelectedOptions?.FirstOrDefault() == 0)
-                {
-                    ClearScreen();
-                    Console.WriteLine("Cannot leave required (*) sections empty.");
-                    Pause();
-                    return false;
-                }
-                return true;
-            case "":
-                ClearScreen();
-                Console.WriteLine("You must select an option or press N if allowed.");
-                Pause();
-                return false;
-            default:
-                if (string.IsNullOrWhiteSpace(option))
-                {
-                    ClearScreen();
-                    Console.WriteLine("Cannot leave required (*) sections empty.");
-                    Pause();
-                    return false;
-                }
-                return false;
-        }
+        return false;
     }
 
     private void ShowOptions(Section section)
@@ -210,15 +209,8 @@ public sealed class FormHandler : IFormHandler
                         Console.WriteLine($"{counter++} - [{(selectedOption is 0 ? " " : "X")}] {option}");
                     }
 
-                    if (!section.Required)
-                        Console.WriteLine("\n* Press any key to select another option or Enter to continue to the next section");
-
-                    if (Console.ReadKey().Key == ConsoleKey.Enter)
-                        break;
-
                     SelectOption(section.Input, section.Required, counter);
                 } while (true);
-                break;
             default:
                 break;
         }
@@ -229,7 +221,13 @@ public sealed class FormHandler : IFormHandler
     private static void Pause() => Console.ReadKey();
 
     // TODO: Export function to IFormAnswerValidator
-    private static bool IsValidAnswer(Section section, string? answer) => !(string.IsNullOrWhiteSpace(answer) && section.Required);
+    private static bool IsValidAnswer(Section section, string? answer)
+    {
+        if (section.Required && string.IsNullOrWhiteSpace(answer))
+            return false;
+
+        return true;
+    }
 
     private static void CentralizeTitle(string title)
     {
