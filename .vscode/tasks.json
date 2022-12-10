@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/MVP/MVP.csproj",
+                "${workspaceFolder}/src/ScreenHandler/ScreenHandler.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -23,7 +23,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/src/MVP/MVP.csproj",
+                "${workspaceFolder}/src/ScreenHandler/ScreenHandler.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -37,7 +37,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/src/MVP/MVP.csproj"
+                "${workspaceFolder}/src/ScreenHandler/ScreenHandler.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

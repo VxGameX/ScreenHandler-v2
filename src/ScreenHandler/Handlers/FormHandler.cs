@@ -38,7 +38,6 @@ public sealed class FormHandler : IFormHandler
     public void Run()
     {
         SetTitle(_form.Title);
-
         try
         {
             // IsFormValid(_form);
@@ -46,6 +45,7 @@ public sealed class FormHandler : IFormHandler
             foreach (var section in _form.Sections!)
             {
                 ShowTitle();
+                SetCurrentSection(section);
                 ShowSection(section);
             }
         }
@@ -97,15 +97,73 @@ public sealed class FormHandler : IFormHandler
         while (true);
     }
 
-    private static void SelectOption(Input input)
+    private bool SelectOption(Input input, bool required, int counter)
     {
-        if (!int.TryParse(Console.ReadLine(), out int selectedOption))
-            throw new NotImplementedException("Could not parse selected option");
-
         if (input.SelectedOptions is null)
             input.SelectedOptions = new List<int>();
 
-        input.SelectedOptions.Add(selectedOption);
+        if (!required || input.SelectedOptions?.FirstOrDefault() != 0)
+            Console.WriteLine("* (N)ext section");
+
+        Console.Write("\n>> ");
+        var option = Console.ReadLine() ?? string.Empty;
+
+        if (!int.TryParse(option, out int selectedOption))
+        {
+            ClearScreen();
+            Console.WriteLine($"You must select a valid option (1-{counter}) or press N if allowed.");
+            Pause();
+            return false;
+        }
+        
+        if (selectedOption < 1 || selectedOption > input.Options!.Count)
+        {
+            ClearScreen();
+            Console.WriteLine($"You must select a valid option (1-{counter}) or press N if allowed.");
+            Pause();
+            return false;
+        }
+
+        if (input.Type == "radiobutton")
+        {
+            var radioOption = input.SelectedOptions!.FirstOrDefault();
+            if (radioOption == selectedOption)
+            {
+                input.SelectedOptions!.Remove(radioOption);
+                return false;
+            }
+
+            if (radioOption != 0)
+                input.SelectedOptions!.Remove(radioOption);
+        }
+        input.SelectedOptions!.Add(selectedOption);
+
+        switch (option.ToLower())
+        {
+            case "n":
+                if (required && input.SelectedOptions?.FirstOrDefault() == 0)
+                {
+                    ClearScreen();
+                    Console.WriteLine("Cannot leave required (*) sections empty.");
+                    Pause();
+                    return false;
+                }
+                return true;
+            case "":
+                ClearScreen();
+                Console.WriteLine("You must select an option or press N if allowed.");
+                Pause();
+                return false;
+            default:
+                if (string.IsNullOrWhiteSpace(option))
+                {
+                    ClearScreen();
+                    Console.WriteLine("Cannot leave required (*) sections empty.");
+                    Pause();
+                    return false;
+                }
+                return false;
+        }
     }
 
     private void ShowOptions(Section section)
@@ -114,19 +172,33 @@ public sealed class FormHandler : IFormHandler
         switch (section.Input.Type)
         {
             case "radiobutton":
-                counter = 1;
-                foreach (var option in section.Input.Options!)
+                do
                 {
-                    var selectedOption = 0;
-                    if (section.Input.SelectedOptions is not null)
-                        selectedOption = section.Input.SelectedOptions.FirstOrDefault();
+                    ClearScreen();
+                    // TODO: Set required mark to RED
+                    ShowLabel(section);
 
-                    Console.WriteLine($"{counter++} - ({(selectedOption != (section.Input.Options.IndexOf(option) + 1) ? string.Empty : "X")}) {option}");
-                }
+                    counter = 1;
+                    foreach (var option in section.Input.Options!)
+                    {
+                        var selectedOption = 0;
+                        if (section.Input.SelectedOptions is not null)
+                            selectedOption = section.Input.SelectedOptions.FirstOrDefault();
+
+                        Console.WriteLine($"{counter++} - ({(selectedOption != (section.Input.Options.IndexOf(option) + 1) ? " " : "X")}) {option}");
+                    }
+
+                    if (SelectOption(section.Input, section.Required, counter))
+                        break;
+                } while (true);
                 break;
             case "checkbox":
                 do
                 {
+                    ClearScreen();
+                    // TODO: Set required mark to RED
+                    ShowLabel(section);
+
                     counter = 1;
                     ClearScreen();
                     foreach (var option in section.Input.Options!)
@@ -144,8 +216,7 @@ public sealed class FormHandler : IFormHandler
                     if (Console.ReadKey().Key == ConsoleKey.Enter)
                         break;
 
-                    Console.Write(">> ");
-                    SelectOption(section.Input);
+                    SelectOption(section.Input, section.Required, counter);
                 } while (true);
                 break;
             default:
@@ -153,7 +224,7 @@ public sealed class FormHandler : IFormHandler
         }
     }
 
-    private static void ShowLabel(Section section) => Console.WriteLine($"{section.Label} {(section.Required ? "*" : string.Empty)}");
+    private static void ShowLabel(Section section) => Console.WriteLine($"{section.Label} {(section.Required ? "*" : string.Empty)}\n");
 
     private static void Pause() => Console.ReadKey();
 

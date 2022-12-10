@@ -16,7 +16,7 @@
         "type": "radiobutton",
         "options": ["I am a new customer", "I am an existing customer"]
       },
-      "required": false
+      "required": true
     },
     {
       "id": "2",
