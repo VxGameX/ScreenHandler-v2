@@ -4,13 +4,13 @@ namespace ScreenHandler.Handlers;
 
 public sealed class FormHandler : IFormHandler
 {
-    private ConfigFile _form;
-    private Section _currentSection;
+    public ConfigFile Form { get; set; }
+    public Section CurrentSection { get; set; }
 
-    public FormHandler(ConfigFile form, IEnumerable<Section> sections)
+    public FormHandler(FormHandlerBuilder builder)
     {
-        _form = form;
-        _form.Sections = sections;
+        Form = builder.Form;
+        Form.Sections = builder.FormSections;
     }
 
     public static IFormHandlerBuilder CreateBuilder(string formPath) => new FormHandlerBuilder(formPath);
@@ -37,16 +37,15 @@ public sealed class FormHandler : IFormHandler
 
     public void Run()
     {
-        SetTitle(_form.Title);
+        SetTitle();
         try
         {
             // IsFormValid(_form);
 
-            foreach (var section in _form.Sections!)
+            foreach (var section in Form.Sections!)
             {
-                ShowTitle();
                 SetCurrentSection(section);
-                ShowSection(section);
+                ShowSection();
             }
         }
         catch (Exception e)
@@ -65,33 +64,32 @@ public sealed class FormHandler : IFormHandler
         throw new NotImplementedException();
     }
 
-    private void SetCurrentSection(Section section) => _currentSection = section;
+    private void SetCurrentSection(Section section) => CurrentSection = section;
 
-    private void ShowSection(Section section)
+    private void ShowSection()
     {
         do
         {
             ClearScreen();
             // TODO: Set required mark to RED
-            ShowLabel(section);
+            ShowLabel();
             // Checks if section has options
-            if (section.Input.Options is null)
+            if (CurrentSection.Input.Options is null)
             {
                 Console.Write(">> ");
                 // TODO: Add TEXT, INT and FLOAT validations according to input type
-                var answer = Console.ReadLine();
+                var answer = Console.ReadLine() ?? string.Empty;
 
-                if (IsValidAnswer(section, answer))
+                if (IsValidAnswer(answer))
                     break;
 
                 ClearScreen();
 
-                // TODO: Create AnswerValidator
-                Console.Write("Cannot leave required (*) fields empty.");
+                Console.Write("Cannot leave required (*) sections empty.");
                 Pause();
                 continue;
             }
-            ShowOptions(section);
+            ShowOptions();
             break;
         }
         while (true);
@@ -102,52 +100,16 @@ public sealed class FormHandler : IFormHandler
         if (input.SelectedOptions is null)
             input.SelectedOptions = new List<int>();
 
-        if (!required || input.SelectedOptions?.FirstOrDefault() != 0)
-            Console.WriteLine("\n* (N)ext section");
-
         Console.Write("\n>> ");
         var option = Console.ReadLine()?
             .ToLower()
             .Trim() ?? string.Empty;
 
-        return IsOptionValid(input, required, counter, option);
-    }
-
-    private bool IsOptionValid(Input input, bool required, int counter, string option)
-    {
-        if (!int.TryParse(option, out int selectedOption))
-        {
-            switch (option)
-            {
-                case "n":
-                    if (required && input.SelectedOptions?.FirstOrDefault() == 0)
-                    {
-                        ClearScreen();
-                        Console.Write("Cannot leave required (*) sections empty.");
-                        Pause();
-                        return false;
-                    }
-                    return true;
-                case "":
-                    ClearScreen();
-                    Console.Write("To continue you must press N when prompted.");
-                    Pause();
-                    return false;
-                default:
-                    ClearScreen();
-                    Console.Write($"You must select a valid option (1-{counter - 1}) or press N if allowed.");
-                    Pause();
-                    return false;
-            }
-        }
-
-        if (selectedOption < 1 || selectedOption > input.Options!.Count)
-        {
-            ClearScreen();
-            Console.Write($"You must select a valid option (1-{counter - 1}) or press N if allowed.");
-            Pause();
+        if (!IsOptionValid(input, required, counter, option, out int selectedOption))
             return false;
-        }
+
+        if (selectedOption == 0)
+            return true;
 
         if (input.Type == "radiobutton")
         {
@@ -161,33 +123,78 @@ public sealed class FormHandler : IFormHandler
             if (radioOption != 0)
                 input.SelectedOptions!.Remove(radioOption);
         }
+
+        if (input.Type == "checkbox")
+        {
+            var checkboxOption = input.SelectedOptions!.FirstOrDefault(so => so == selectedOption);
+            if (checkboxOption == selectedOption)
+            {
+                input.SelectedOptions!.Remove(checkboxOption);
+                return false;
+            }
+        }
+
         input.SelectedOptions!.Add(selectedOption);
         return false;
     }
 
-    private void ShowOptions(Section section)
+    private bool IsOptionValid(Input input, bool required, int counter, string option, out int selectedOption)
+    {
+        if (!int.TryParse(option, out selectedOption))
+        {
+            switch (option)
+            {
+                case "":
+                    if (required && input.SelectedOptions?.FirstOrDefault() == 0)
+                    {
+                        ClearScreen();
+                        Console.Write("Cannot leave required (*) sections empty.");
+                        Pause();
+                        return false;
+                    }
+                    return true;
+                default:
+                    ClearScreen();
+                    Console.Write($"You must select a valid option (1-{counter - 1}) or press Enter to go to the next section.");
+                    Pause();
+                    return false;
+            }
+        }
+
+        if (selectedOption < 1 || selectedOption > input.Options!.Count)
+        {
+            ClearScreen();
+            Console.Write($"You must select a valid option (1-{counter - 1}) or press Enter to go to the next section.");
+            Pause();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ShowOptions()
     {
         var counter = 1;
-        switch (section.Input.Type)
+        switch (CurrentSection.Input.Type)
         {
             case "radiobutton":
                 do
                 {
                     ClearScreen();
                     // TODO: Set required mark to RED
-                    ShowLabel(section);
+                    ShowLabel();
 
                     counter = 1;
-                    foreach (var option in section.Input.Options!)
+                    foreach (var option in CurrentSection.Input.Options!)
                     {
                         var selectedOption = 0;
-                        if (section.Input.SelectedOptions is not null)
-                            selectedOption = section.Input.SelectedOptions.FirstOrDefault();
+                        if (CurrentSection.Input.SelectedOptions is not null)
+                            selectedOption = CurrentSection.Input.SelectedOptions.FirstOrDefault();
 
-                        Console.WriteLine($"{counter++} - ({(selectedOption != (section.Input.Options.IndexOf(option) + 1) ? " " : "X")}) {option}");
+                        Console.WriteLine($"{counter++} - ({(selectedOption != (CurrentSection.Input.Options.IndexOf(option) + 1) ? " " : "X")}) {option}");
                     }
 
-                    if (SelectOption(section.Input, section.Required, counter))
+                    if (SelectOption(CurrentSection.Input, CurrentSection.Required, counter))
                         break;
                 } while (true);
                 break;
@@ -196,58 +203,50 @@ public sealed class FormHandler : IFormHandler
                 {
                     ClearScreen();
                     // TODO: Set required mark to RED
-                    ShowLabel(section);
+                    ShowLabel();
 
                     counter = 1;
-                    ClearScreen();
-                    foreach (var option in section.Input.Options!)
+                    foreach (var option in CurrentSection.Input.Options!)
                     {
                         var selectedOption = 0;
-                        if (section.Input.SelectedOptions is not null)
-                            selectedOption = section.Input.SelectedOptions.FirstOrDefault(op => op == (section.Input.Options.IndexOf(option) + 1));
+                        if (CurrentSection.Input.SelectedOptions is not null)
+                            selectedOption = CurrentSection.Input.SelectedOptions.FirstOrDefault(op => op == (CurrentSection.Input.Options.IndexOf(option) + 1));
 
                         Console.WriteLine($"{counter++} - [{(selectedOption is 0 ? " " : "X")}] {option}");
                     }
 
-                    SelectOption(section.Input, section.Required, counter);
+                    if (SelectOption(CurrentSection.Input, CurrentSection.Required, counter))
+                        break;
                 } while (true);
+                break;
             default:
                 break;
         }
     }
 
-    private static void ShowLabel(Section section) => Console.WriteLine($"{section.Label} {(section.Required ? "*" : string.Empty)}\n");
+    private void ShowLabel() => Console.WriteLine($"{CurrentSection.Label} {(CurrentSection.Required ? "*" : string.Empty)}\n");
 
     private static void Pause() => Console.ReadKey();
 
-    // TODO: Export function to IFormAnswerValidator
-    private static bool IsValidAnswer(Section section, string? answer)
-    {
-        if (section.Required && string.IsNullOrWhiteSpace(answer))
-            return false;
+    private bool IsValidAnswer(string answer) => !(CurrentSection.Required && string.IsNullOrWhiteSpace(answer));
 
-        return true;
+    private void CentralizeTitle()
+    {
+        Console.SetCursorPosition((Console.WindowWidth - Form.Title.Label.Length) / 2, Console.CursorTop);
+        Console.WriteLine(Form.Title.Label);
     }
 
-    private static void CentralizeTitle(string title)
-    {
-        Console.SetCursorPosition((Console.WindowWidth - title.Length) / 2, Console.CursorTop);
-        Console.WriteLine(title);
-    }
-
-    private static void SetTitle(Title title) => Console.Title = title.Label;
+    private void SetTitle() => Console.Title = Form.Title.Label;
 
     private void ShowTitle()
     {
-        if (_form.Title.Centralized)
+        if (Form.Title.Centralized)
         {
-            CentralizeTitle(_form.Title.Label);
+            CentralizeTitle();
             return;
         }
-        ShowTitle(_form.Title.Label);
+        Console.WriteLine(Form.Title.Label);
     }
-
-    private static void ShowTitle(string title) => Console.WriteLine(title);
 
     private void ClearScreen()
     {

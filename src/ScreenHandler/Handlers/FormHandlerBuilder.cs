@@ -31,7 +31,7 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
         }
     }
 
-    public IFormHandler Build() => new FormHandler(Form, FormSections);
+    public IFormHandler Build() => new FormHandler(this);
 
     public ISectionConfigurator SectionsSettings() => new SectionConfigurator(this);
 
