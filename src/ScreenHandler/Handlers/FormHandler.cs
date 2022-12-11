@@ -40,8 +40,6 @@ public sealed class FormHandler : IFormHandler
         SetTitle();
         try
         {
-            // IsFormValid(_form);
-
             foreach (var section in Form.Sections!)
             {
                 SetCurrentSection(section);

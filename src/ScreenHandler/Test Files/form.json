@@ -19,6 +19,18 @@
       "required": true
     },
     {
+      "id": "user ID",
+      "superSection": {
+        "id": "1",
+        "activationAnswer": "I am an existing customer"
+      },
+      "label": "Enter your user ID",
+      "input": {
+        "type": "text"
+      },
+      "required": true
+    },
+    {
       "id": "2",
       "label": "What is the item you would like to order?",
       "input": {

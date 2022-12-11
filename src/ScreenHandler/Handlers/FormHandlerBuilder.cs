@@ -31,7 +31,11 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
         }
     }
 
-    public IFormHandler Build() => new FormHandler(this);
+    public IFormHandler Build()
+    {
+        FormStructValidation();
+        return new FormHandler(this);
+    }
 
     public ISectionConfigurator SectionsSettings() => new SectionConfigurator(this);
 
@@ -67,5 +71,20 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
             throw new Exception("Form does not contains sections");
 
         return true;
+    }
+
+    private void FormStructValidation()
+    {
+        if (Form.Type != "form")
+            throw new Exception($"Config file 'type' is {Form.Type}. You must specify type 'form'.");
+
+        if (string.IsNullOrWhiteSpace(Form.Id))
+            throw new Exception("Config file 'id' is empty. You must specify a form id.");
+
+        if (Form.Title is null)
+            throw new Exception("Config file 'title' is empty. You must assing a title to a form.");
+
+        if (Form.Sections is null)
+            throw new Exception("Config file 'sections' is empty. You must add at least 1 section to a form.");
     }
 }
