@@ -5,10 +5,10 @@
     "label": "Order Request",
     "centralized": true,
     "foregroundColor": "blue",
-    "backgroundColor": "yellow"
+    "backgroundColor": "white"
   },
   "body": {
-    "foregroundColor": "white",
+    "foregroundColor": "red",
     "backgroundColor": "black"
   },
   "description": "Order requests!",
@@ -20,19 +20,21 @@
         "type": "radiobutton",
         "options": ["I am a new customer", "I am an existing customer"]
       },
-      "required": true
-    },
-    {
-      "id": "user ID",
-      "superSection": {
-        "id": "1",
-        "activationAnswer": "I am an existing customer"
-      },
-      "label": "Enter your user ID",
-      "input": {
-        "type": "text"
-      },
-      "required": true
+      "required": true,
+      "subSections": {
+        "id": "Existing Customer",
+        "activationAnswer": "I am an existing customer",
+        "sections": [
+          {
+            "id": "1.1",
+            "label": "Enter your customer ID",
+            "input": {
+              "type": "int"
+            },
+            "required": true
+          }
+        ]
+      }
     },
     {
       "id": "2",
