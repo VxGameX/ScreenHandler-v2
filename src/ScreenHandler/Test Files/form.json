@@ -4,6 +4,10 @@
   "title": {
     "label": "Order Request",
     "centralized": true,
+    "foregroundColor": "blue",
+    "backgroundColor": "yellow"
+  },
+  "body": {
     "foregroundColor": "white",
     "backgroundColor": "black"
   },

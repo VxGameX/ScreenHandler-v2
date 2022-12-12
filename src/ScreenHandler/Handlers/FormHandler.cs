@@ -243,7 +243,9 @@ public sealed class FormHandler : IFormHandler
             CentralizeTitle();
             return;
         }
-        Console.WriteLine(Form.Title.Label);
+        SetTitleColors();
+        Console.WriteLine($"{Form.Title.Label}\n");
+        SetBodyColors();
     }
 
     private void ClearScreen()
@@ -251,4 +253,37 @@ public sealed class FormHandler : IFormHandler
         Console.Clear();
         ShowTitle();
     }
+
+    private void SetBodyColors()
+    {
+        Console.ForegroundColor = SetColor(Form.Title.ForegroundColor);
+        Console.BackgroundColor = SetColor(Form.Title.BackgroundColor);
+    }
+
+    private void SetTitleColors()
+    {
+        Console.ForegroundColor = SetColor(Form.Title.ForegroundColor);
+        Console.BackgroundColor = SetColor(Form.Title.BackgroundColor);
+    }
+
+    private ConsoleColor SetColor(string color) => color switch
+    {
+        "black" => ConsoleColor.Black,
+        "blue" => ConsoleColor.Blue,
+        "cyan" => ConsoleColor.Cyan,
+        "darkBlue" => ConsoleColor.DarkBlue,
+        "darkCyan" => ConsoleColor.DarkCyan,
+        "darkGray" => ConsoleColor.DarkGray,
+        "darkGreen" => ConsoleColor.DarkGreen,
+        "darkMagenta" => ConsoleColor.DarkMagenta,
+        "darkRed" => ConsoleColor.DarkRed,
+        "darkYello" => ConsoleColor.DarkYellow,
+        "gray" => ConsoleColor.Gray,
+        "green" => ConsoleColor.Green,
+        "magenta" => ConsoleColor.Magenta,
+        "red" => ConsoleColor.Red,
+        "white" => ConsoleColor.White,
+        "yellow" => ConsoleColor.Yellow,
+        _ => throw new Exception("You must select a valid console color.")
+    };
 }

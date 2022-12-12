@@ -50,7 +50,7 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
         return false;
     }
 
-    public bool IsFormRegistered(string formId)
+    private bool IsFormRegistered(string formId)
     {
         // var form = _registeredForms.FirstOrDefault(c => c.Id == formId);
         // if (form is null)
@@ -58,14 +58,14 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
         return false;
     }
 
-    public bool IsFormRegistered(ConfigFile form)
+    private bool IsFormRegistered(ConfigFile form)
     {
         // if (!_registeredForms.Contains(form))
         //     return false;
         return true;
     }
 
-    public bool IsFormValid(ConfigFile form)
+    private bool IsFormValid(ConfigFile form)
     {
         if (IsFormEmpty(form))
             throw new Exception("Form does not contains sections");
@@ -76,13 +76,18 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
     private void FormStructValidation()
     {
         if (Form.Type != "form")
-            throw new Exception($"Config file 'type' is {Form.Type}. You must specify type 'form'.");
+            throw new Exception($"Config file 'type' is {(string.IsNullOrWhiteSpace(Form.Type) ? "empty" : $"'{Form.Type}'")}. You must specify type 'form'.");
 
         if (string.IsNullOrWhiteSpace(Form.Id))
             throw new Exception("Config file 'id' is empty. You must specify a form id.");
 
         if (Form.Title is null)
             throw new Exception("Config file 'title' is empty. You must assing a title to a form.");
+
+        if (string.IsNullOrWhiteSpace(Form.Title.Label))
+            throw new Exception("Title 'label' is empty. You must assign a label to the form's title.");
+
+        // if ()
 
         if (Form.Sections is null)
             throw new Exception("Config file 'sections' is empty. You must add at least 1 section to a form.");
