@@ -7,8 +7,8 @@ public class SectionConfigurator : ISectionConfigurator
 {
     private FormHandlerBuilder _formHandlerBuilder;
     private ConfigFile _form;
-    private Section _entryPoint;
-    private static ICollection<Section> _sectionsOrder;
+    private Section _entryPoint = null!;
+    private static ICollection<Section> _sectionsOrder = null!;
 
     public SectionConfigurator(FormHandlerBuilder formHandlerBuilder)
     {
