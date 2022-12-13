@@ -51,4 +51,9 @@ internal class SectionValidator : ISectionValidator
                 + "You must specify options if type is {checkBox} or {radioButton}");
         }
     }
+
+    private void PreAnsweredValidation()
+    {
+        
+    }
 }

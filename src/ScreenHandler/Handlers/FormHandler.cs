@@ -15,22 +15,7 @@ public sealed class FormHandler : IFormHandler
 
     public static IFormHandlerBuilder CreateBuilder(string formPath) => new FormHandlerBuilder(formPath);
 
-    public IFormHandler ClearAnswers()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IFormHandler NextSection()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IFormHandler PreviousSection()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IFormHandler Save()
+    public void ClearAnswers()
     {
         throw new NotImplementedException();
     }
@@ -66,12 +51,11 @@ public sealed class FormHandler : IFormHandler
         }
     }
 
-    public IFormHandler ReviewAnswers()
+    public void ReviewAnswers()
     {
-        throw new NotImplementedException();
     }
 
-    public IFormHandler RestartForm()
+    public void RestartForm()
     {
         throw new NotImplementedException();
     }
