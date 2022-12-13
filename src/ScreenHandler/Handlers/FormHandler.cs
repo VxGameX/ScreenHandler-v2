@@ -4,8 +4,8 @@ namespace ScreenHandler.Handlers;
 
 public sealed class FormHandler : IFormHandler
 {
-    public ConfigFile Form { get; set; }
-    public Section CurrentSection { get; set; }
+    internal ConfigFile Form { get; set; }
+    internal Section CurrentSection { get; set; } = null!;
 
     public FormHandler(FormHandlerBuilder builder)
     {
@@ -37,18 +37,32 @@ public sealed class FormHandler : IFormHandler
 
     public void Run()
     {
+        ClearScreen();
         SetTitle();
-        try
+        if (!string.IsNullOrWhiteSpace(Form.Description))
+            ShowDescription();
+
+        foreach (var section in Form.Sections!)
         {
-            foreach (var section in Form.Sections!)
-            {
-                SetCurrentSection(section);
-                ShowSection();
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
+            SetCurrentSection(section);
+            ShowSection();
+
+            // if (section.SubSections is null)
+            //     continue;
+
+            // var answer = section.Input.Answer;
+            // var activationAnswer = section.SubSections.ActivationAnswer;
+
+            // if (activationAnswer == answer || activationAnswer == section.Input.Options!.Contains(activationAnswer!))m
+            //     foreach (var subSection in section.SubSections.Sections!)
+            //     {
+            //         SetCurrentSection(subSection);
+            //         ShowSection();
+            //     }
+
+            // if (section.Input.SelectedOptions!.Contains(activationAnswer!))
+            // {
+            // }
         }
     }
 
@@ -62,6 +76,12 @@ public sealed class FormHandler : IFormHandler
         throw new NotImplementedException();
     }
 
+    private void ShowDescription()
+    {
+        Console.Write(Form.Description);
+        Pause();
+    }
+
     private void SetCurrentSection(Section section) => CurrentSection = section;
 
     private void ShowSection()
@@ -69,26 +89,23 @@ public sealed class FormHandler : IFormHandler
         do
         {
             ClearScreen();
-            // TODO: Set required mark to RED
             ShowLabel();
-            // Checks if section has options
-            if (CurrentSection.Input.Options is null)
+            if (CurrentSection.Input.Type is "checkbox" or "radiobutton")
             {
-                Console.Write(">> ");
-                // TODO: Add TEXT, INT and FLOAT validations according to input type
-                var answer = Console.ReadLine() ?? string.Empty;
-
-                if (IsValidAnswer(answer))
-                    break;
-
-                ClearScreen();
-
-                Console.Write("Cannot leave required (*) sections empty.");
-                Pause();
-                continue;
+                ShowOptions();
+                break;
             }
-            ShowOptions();
-            break;
+
+            Console.Write(">> ");
+            var answer = Console.ReadLine() ?? string.Empty;
+
+            if (IsValidAnswer(answer, out string message))
+                break;
+
+            ClearScreen();
+            Console.Write(message);
+            Pause();
+            continue;
         }
         while (true);
     }
@@ -98,9 +115,8 @@ public sealed class FormHandler : IFormHandler
         if (input.SelectedOptions is null)
             input.SelectedOptions = new List<int>();
 
-        Console.Write("\n>> ");
+        Console.Write($"{Environment.NewLine}>> ");
         var option = Console.ReadLine()?
-            .ToLower()
             .Trim() ?? string.Empty;
 
         if (!IsOptionValid(input, required, counter, option, out int selectedOption))
@@ -114,12 +130,12 @@ public sealed class FormHandler : IFormHandler
             var radioOption = input.SelectedOptions!.FirstOrDefault();
             if (radioOption == selectedOption)
             {
-                input.SelectedOptions!.Remove(radioOption);
+                input.SelectedOptions.Remove(radioOption);
                 return false;
             }
 
             if (radioOption != 0)
-                input.SelectedOptions!.Remove(radioOption);
+                input.SelectedOptions.Remove(radioOption);
         }
 
         if (input.Type == "checkbox")
@@ -127,7 +143,7 @@ public sealed class FormHandler : IFormHandler
             var checkboxOption = input.SelectedOptions!.FirstOrDefault(so => so == selectedOption);
             if (checkboxOption == selectedOption)
             {
-                input.SelectedOptions!.Remove(checkboxOption);
+                input.SelectedOptions.Remove(checkboxOption);
                 return false;
             }
         }
@@ -222,16 +238,38 @@ public sealed class FormHandler : IFormHandler
         }
     }
 
-    private void ShowLabel() => Console.WriteLine($"{CurrentSection.Label} {(CurrentSection.Required ? "*" : string.Empty)}\n");
+    private void ShowLabel() => Console.WriteLine($"{CurrentSection.Label} {(CurrentSection.Required ? "*" : string.Empty)}{Environment.NewLine}");
 
     private static void Pause() => Console.ReadKey();
 
-    private bool IsValidAnswer(string answer) => !(CurrentSection.Required && string.IsNullOrWhiteSpace(answer));
+    private bool IsValidAnswer(string answer, out string message)
+    {
+        if (CurrentSection.Required && string.IsNullOrWhiteSpace(answer))
+        {
+            message = "Cannot leave required (*) sections empty.";
+            return false;
+        }
+
+        if (CurrentSection.Input.Type == "int" && !int.TryParse(answer, out int _))
+        {
+            message = "Answer must be an integer number.";
+            return false;
+        }
+
+        if (CurrentSection.Input.Type == "float" && !double.TryParse(answer, out double _))
+        {
+            message = "Answer must be a floating point number.";
+            return false;
+        }
+
+        message = string.Empty;
+        return true;
+    }
 
     private void CentralizeTitle()
     {
         Console.SetCursorPosition((Console.WindowWidth - Form.Title.Label.Length) / 2, Console.CursorTop);
-        Console.WriteLine(Form.Title.Label);
+        Console.WriteLine($"{Form.Title.Label}{Environment.NewLine}");
     }
 
     private void SetTitle() => Console.Title = Form.Title.Label;
@@ -240,50 +278,69 @@ public sealed class FormHandler : IFormHandler
     {
         if (Form.Title.Centralized)
         {
+            SetTitleColors();
             CentralizeTitle();
+            SetBodyColors();
             return;
         }
+
         SetTitleColors();
-        Console.WriteLine($"{Form.Title.Label}\n");
+        Console.WriteLine($"{Form.Title.Label}{Environment.NewLine}");
         SetBodyColors();
     }
 
     private void ClearScreen()
     {
+        Console.ResetColor();
         Console.Clear();
         ShowTitle();
     }
 
     private void SetBodyColors()
     {
-        Console.ForegroundColor = SetColor(Form.Title.ForegroundColor);
-        Console.BackgroundColor = SetColor(Form.Title.BackgroundColor);
+        if (Form.Body.ForegroundColor is not null)
+            Console.ForegroundColor = GetColor(Form.Body.ForegroundColor);
+
+        if (Form.Body.BackgroundColor is not null)
+            Console.BackgroundColor = GetColor(Form.Body.BackgroundColor);
     }
 
     private void SetTitleColors()
     {
-        Console.ForegroundColor = SetColor(Form.Title.ForegroundColor);
-        Console.BackgroundColor = SetColor(Form.Title.BackgroundColor);
+        if (Form.Title.ForegroundColor is not null)
+            Console.ForegroundColor = GetColor(Form.Title.ForegroundColor);
+
+        if (Form.Title.BackgroundColor is not null)
+            Console.BackgroundColor = GetColor(Form.Title.BackgroundColor);
     }
 
-    private ConsoleColor SetColor(string color) => color switch
+    private ConsoleColor GetColor(string color)
     {
-        "black" => ConsoleColor.Black,
-        "blue" => ConsoleColor.Blue,
-        "cyan" => ConsoleColor.Cyan,
-        "darkBlue" => ConsoleColor.DarkBlue,
-        "darkCyan" => ConsoleColor.DarkCyan,
-        "darkGray" => ConsoleColor.DarkGray,
-        "darkGreen" => ConsoleColor.DarkGreen,
-        "darkMagenta" => ConsoleColor.DarkMagenta,
-        "darkRed" => ConsoleColor.DarkRed,
-        "darkYello" => ConsoleColor.DarkYellow,
-        "gray" => ConsoleColor.Gray,
-        "green" => ConsoleColor.Green,
-        "magenta" => ConsoleColor.Magenta,
-        "red" => ConsoleColor.Red,
-        "white" => ConsoleColor.White,
-        "yellow" => ConsoleColor.Yellow,
-        _ => throw new Exception("You must select a valid console color.")
-    };
+        const string black = "black", blue = "blue", cyan = "cyan",
+            darkBlue = "darkBlue", darkCyan = "darkCyan", darkGray = "darkGray",
+            darkGreen = "darkGreen", darkMagenta = "darkMagenta", darkRed = "darkRed",
+            darkYellow = "darkYello", gray = "gray", green = "green",
+            mangenta = "magenta", red = "red", white = "white", yellow = "yellow";
+
+        return color switch
+        {
+            black => ConsoleColor.Black,
+            blue => ConsoleColor.Blue,
+            cyan => ConsoleColor.Cyan,
+            darkBlue => ConsoleColor.DarkBlue,
+            darkCyan => ConsoleColor.DarkCyan,
+            darkGray => ConsoleColor.DarkGray,
+            darkGreen => ConsoleColor.DarkGreen,
+            darkMagenta => ConsoleColor.DarkMagenta,
+            darkRed => ConsoleColor.DarkRed,
+            darkYellow => ConsoleColor.DarkYellow,
+            gray => ConsoleColor.Gray,
+            green => ConsoleColor.Green,
+            mangenta => ConsoleColor.Magenta,
+            red => ConsoleColor.Red,
+            white => ConsoleColor.White,
+            yellow => ConsoleColor.Yellow,
+            _ => throw new Exception("You must select a valid console color.")
+        };
+    }
 }
