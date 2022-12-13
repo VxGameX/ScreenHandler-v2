@@ -15,11 +15,6 @@ public sealed class FormHandler : IFormHandler
 
     public static IFormHandlerBuilder CreateBuilder(string formPath) => new FormHandlerBuilder(formPath);
 
-    public void ClearAnswers()
-    {
-        throw new NotImplementedException();
-    }
-
     public void Run()
     {
         ClearScreen();
@@ -49,15 +44,6 @@ public sealed class FormHandler : IFormHandler
             // {
             // }
         }
-    }
-
-    public void ReviewAnswers()
-    {
-    }
-
-    public void RestartForm()
-    {
-        throw new NotImplementedException();
     }
 
     private void ShowDescription()
