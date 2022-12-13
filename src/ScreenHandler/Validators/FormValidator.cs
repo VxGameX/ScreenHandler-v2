@@ -5,7 +5,7 @@ namespace ScreenHandler.Validators;
 internal class FormValidator : IFormValidator
 {
     private static ICollection<ConfigFile> _registeredForms;
-    private ConfigFile _form;
+    private Form _form;
     private ISectionValidator _sectionValidator;
 
     static FormValidator() => _registeredForms = new List<ConfigFile>();
@@ -16,7 +16,7 @@ internal class FormValidator : IFormValidator
         _sectionValidator = new SectionValidator();
     }
 
-    public void RegisterForm(ConfigFile form)
+    public void RegisterForm(Form form)
     {
         if (IsFormRegistered(form.Id))
             throw new Exception($"Form ID {form.Id} is already registered.");
@@ -29,7 +29,7 @@ internal class FormValidator : IFormValidator
     private void RunValidations()
     {
         const string form = "form";
-        const int descriptionMaxLength = 255;
+        const int descriptionMaxLength = 500;
 
         if (_form.Type != form)
             throw new Exception($"Config file 'type' is {(string.IsNullOrWhiteSpace(_form.Type) ? "empty" : $"'{_form.Type}'")}. "

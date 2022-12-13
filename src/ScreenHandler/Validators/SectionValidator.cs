@@ -4,7 +4,10 @@ namespace ScreenHandler.Validators;
 
 internal class SectionValidator : ISectionValidator
 {
-    public void RunValidations(ConfigFile form)
+    private const string _int = "int", _float = "float", _radioButton = "radiobutton",
+       _text = "text", _checkBox = "checkbox";
+
+    public void RunValidations(Form form)
     {
         if (form.Sections is null)
             throw new Exception("Config file 'sections' is empty. You must add at least 1 section to a form.");
@@ -17,8 +20,6 @@ internal class SectionValidator : ISectionValidator
 
     private void SectionValidation(IEnumerable<Section> sections)
     {
-        const string @int = "int", @float = "float", radioButton = "radiobutton",
-           text = "text", checkBox = "checkbox";
 
         foreach (var section in sections)
         {
@@ -38,38 +39,31 @@ internal class SectionValidator : ISectionValidator
                 throw new Exception("Config file -> 'sections' -> 'Input' -> 'Type' is empty. "
                 + "You must add at least 1 section to a form.");
 
-            if (section.Input.Type is not @int and not @float and not radioButton and not text and not checkBox)
+            if (section.Input.Type is not _int and not _float and not _radioButton and not _text and not _checkBox)
                 throw new Exception("Config file -> 'sections' -> 'input' -> 'type' is not a valid option. "
                 + "You must specify 'text', 'int', 'checkbox' or 'radiobutton' input type.");
 
-            if (section.Input.Type is checkBox or radioButton && section.Input.Options is null)
+            if (section.Input.Type is _checkBox or _radioButton && section.Input.Options is null)
                 throw new Exception($"Config file -> 'sections' -> 'input' -> 'options' is empty. "
-                + "You must specify options if type is {checkBox} or {radioButton}");
+                + $"You must specify options if type is {_checkBox} or {_radioButton}");
 
-            if (section.Input.Type is checkBox or radioButton)
+            if (section.Input.Type is _checkBox or _radioButton && !section.Input.Options!.Any())
                 throw new Exception($"Config file -> 'sections' -> 'input' -> 'options' is empty. "
-                + "You must specify options if type is {checkBox} or {radioButton}");
+                + $"You must specify options if type is {_checkBox} or {_radioButton}");
 
-            if (section.Input.Options!.Any())
-                throw new Exception($"Config file -> 'sections' -> 'input' -> 'options' is empty. "
-                + "You must specify options if type is {checkBox} or {radioButton}");
-
-            PreAnsweredValidation(section.Input);
+            if (section.Input is not null)
+                PreAnsweredValidation(section.Input);
         }
     }
 
     private void PreAnsweredValidation(Input input)
     {
-        if (string.IsNullOrWhiteSpace(input.Answer))
+        if (!string.IsNullOrWhiteSpace(input.Answer))
             throw new Exception($"Config file -> 'sections' -> 'input' -> 'options' is empty. "
-                + "You must specify options if type is {checkBox} or {radioButton}");
+                + $"You must specify options if type is {_checkBox} or {_radioButton}");
 
         if (input.SelectedOptions is not null)
             throw new Exception($"Config file -> 'sections' -> 'input' -> 'options' is empty. "
-                    + "You must specify options if type is {checkBox} or {radioButton}");
-
-        if (input.SelectedOptions!.Any())
-            throw new Exception($"Config file -> 'sections' -> 'input' -> 'options' is empty. "
-                    + "You must specify options if type is {checkBox} or {radioButton}");
+                    + $"You must specify options if type is {_checkBox} or {_radioButton}");
     }
 }

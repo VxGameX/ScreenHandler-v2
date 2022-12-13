@@ -4,5 +4,5 @@ namespace ScreenHandler.Validators;
 
 public interface IFormValidator
 {
-    void RegisterForm(ConfigFile form);
+    void RegisterForm(Form form);
 }

@@ -4,5 +4,5 @@ namespace ScreenHandler.Validators;
 
 public interface ISectionValidator
 {
-    void RunValidations(ConfigFile form);
+    void RunValidations(Form form);
 }

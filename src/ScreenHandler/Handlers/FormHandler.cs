@@ -4,8 +4,9 @@ namespace ScreenHandler.Handlers;
 
 public sealed class FormHandler : IFormHandler
 {
-    internal ConfigFile Form { get; set; }
+    internal Form Form { get; set; }
     internal Section CurrentSection { get; set; } = null!;
+    private bool _isFormCompleted;
 
     public FormHandler(FormHandlerBuilder builder)
     {
@@ -26,24 +27,17 @@ public sealed class FormHandler : IFormHandler
         {
             SetCurrentSection(section);
             ShowSection();
-
-            // if (section.SubSections is null)
-            //     continue;
-
-            // var answer = section.Input.Answer;
-            // var activationAnswer = section.SubSections.ActivationAnswer;
-
-            // if (activationAnswer == answer || activationAnswer == section.Input.Options!.Contains(activationAnswer!))m
-            //     foreach (var subSection in section.SubSections.Sections!)
-            //     {
-            //         SetCurrentSection(subSection);
-            //         ShowSection();
-            //     }
-
-            // if (section.Input.SelectedOptions!.Contains(activationAnswer!))
-            // {
-            // }
         }
+
+        _isFormCompleted = true;
+    }
+
+    public Form GetAnswers()
+    {
+        if (!_isFormCompleted)
+            throw new Exception("Form is not yet completed");
+
+        return Form;
     }
 
     private void ShowDescription()
@@ -210,7 +204,7 @@ public sealed class FormHandler : IFormHandler
 
     private void ShowLabel() => Console.WriteLine($"{CurrentSection.Label} {(CurrentSection.Required ? "*" : string.Empty)}{Environment.NewLine}");
 
-    private static void Pause() => Console.ReadKey();
+    private static void Pause() => Console.ReadKey(true);
 
     private bool IsValidAnswer(string answer, out string message)
     {
@@ -232,6 +226,7 @@ public sealed class FormHandler : IFormHandler
             return false;
         }
 
+        CurrentSection.Input.Answer = answer;
         message = string.Empty;
         return true;
     }

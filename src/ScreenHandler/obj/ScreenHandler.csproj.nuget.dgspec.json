@@ -5,7 +5,7 @@
   },
   "projects": {
     "/Users/omar.nunez/Projects/ScreenHandler/ScreenHandler/src/ScreenHandler/ScreenHandler.csproj": {
-      "version": "1.0.0",
+      "version": "1.1.6",
       "restore": {
         "projectUniqueName": "/Users/omar.nunez/Projects/ScreenHandler/ScreenHandler/src/ScreenHandler/ScreenHandler.csproj",
         "projectName": "ScreenHandler",
@@ -21,6 +21,7 @@
         ],
         "sources": {
           "/Users/omar.nunez/Projects/Microservices/packages": {},
+          "/Users/omar.nunez/Projects/ScreenHandler/Packages": {},
           "/Users/omar.nunez/Projects/Softwy/Packages": {},
           "https://api.nuget.org/v3/index.json": {}
         },

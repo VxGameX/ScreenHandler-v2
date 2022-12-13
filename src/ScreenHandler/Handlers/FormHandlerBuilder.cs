@@ -8,7 +8,7 @@ namespace ScreenHandler.Handlers;
 public sealed class FormHandlerBuilder : IFormHandlerBuilder
 {
     private IFormValidator _formValidator;
-    internal ConfigFile Form { get; set; }
+    internal Form Form { get; set; }
     internal ICollection<Section> FormSections { get; set; }
 
     public FormHandlerBuilder(string formPath)
@@ -22,7 +22,7 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
             var json = file.ReadToEnd()
                 .Trim();
 
-            var newForm = JsonConvert.DeserializeObject<ConfigFile>(json);
+            var newForm = JsonConvert.DeserializeObject<Form>(json);
             if (newForm is null)
                 throw new Exception($"Could not find any screen file on path {formPath}");
 

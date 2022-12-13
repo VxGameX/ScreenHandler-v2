@@ -6,7 +6,7 @@ namespace ScreenHandler.Configurators;
 public class SectionConfigurator : ISectionConfigurator
 {
     private FormHandlerBuilder _formHandlerBuilder;
-    private ConfigFile _form;
+    private Form _form;
     private Section _entryPoint = null!;
     private static ICollection<Section> _sectionsOrder = null!;
 

@@ -6,5 +6,4 @@ public class Section
     public string Label { get; set; } = null!;
     public Input Input { get; set; } = null!;
     public bool Required { get; set; } = default;
-    public SubSection? SubSections { get; set; }
 }
