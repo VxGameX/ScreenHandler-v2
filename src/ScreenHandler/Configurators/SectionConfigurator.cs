@@ -1,3 +1,4 @@
+using ScreenHandler.Exceptions;
 using ScreenHandler.Handlers;
 using ScreenHandler.Settings;
 
@@ -22,7 +23,7 @@ public class SectionConfigurator : ISectionConfigurator
     public ISectionConfigurator SetEntryPoint(string sectionId)
     {
         if (_entryPoint is not null)
-            throw new Exception($"Cannot override entry point. Current entry point {_entryPoint.Id}");
+            throw new SectionConfigurationException($"Cannot override entry point. Current entry point {_entryPoint.Id}");
 
         var entryPoint = GetSection(sectionId);
         _entryPoint = entryPoint;
@@ -33,7 +34,7 @@ public class SectionConfigurator : ISectionConfigurator
     public ISectionConfigurator SetNextSection(string sectionsId)
     {
         if (_entryPoint is null)
-            throw new Exception("You must set an entry point before setting a next section.");
+            throw new SectionConfigurationException("You must set an entry point before setting a next section.");
 
         var nextSection = GetSection(sectionsId);
         _sectionsOrder.Add(nextSection);
@@ -43,7 +44,7 @@ public class SectionConfigurator : ISectionConfigurator
     private Section GetSection(string sectionId)
     {
         if (!IsSectionRegistered(sectionId))
-            throw new Exception($"Section {sectionId} is not registered.");
+            throw new SectionConfigurationException($"Section {sectionId} is not registered.");
 
         var section = _form.Sections!.First(rf => rf.Id == sectionId);
         return section;
@@ -56,10 +57,5 @@ public class SectionConfigurator : ISectionConfigurator
             return false;
 
         return true;
-    }
-
-    private bool IsSectionValid(Section section)
-    {
-        throw new NotImplementedException();
     }
 }

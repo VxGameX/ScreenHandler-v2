@@ -1,3 +1,4 @@
+using ScreenHandler.Exceptions;
 using ScreenHandler.Settings;
 
 namespace ScreenHandler.Validators;
@@ -19,7 +20,7 @@ internal class FormValidator : IFormValidator
     public void RegisterForm(Form form)
     {
         if (IsFormRegistered(form.Id))
-            throw new Exception($"Form ID {form.Id} is already registered.");
+            throw new FormStructException($"Form ID {form.Id} is already registered.");
 
         _form = form;
         RunValidations();
@@ -32,28 +33,30 @@ internal class FormValidator : IFormValidator
         const int descriptionMaxLength = 500;
 
         if (_form.Type != form)
-            throw new Exception($"Config file 'type' is {(string.IsNullOrWhiteSpace(_form.Type) ? "empty" : $"'{_form.Type}'")}. "
+            throw new FormStructException($"Config file 'type' is {(string.IsNullOrWhiteSpace(_form.Type) ? "empty" : $"'{_form.Type}'")}. "
             + "You must specify type 'form'.");
 
         if (string.IsNullOrWhiteSpace(_form.Id))
-            throw new Exception("Config file 'id' is empty. You must specify a form id.");
+            throw new FormStructException("Config file 'id' is empty. You must specify a form id.");
 
         TitleValidation();
 
         if (_form.Description?.Length > descriptionMaxLength)
-            throw new Exception($"Config file 'description' is larger than {descriptionMaxLength} characters.");
+            throw new FormStructException($"Config file 'description' is larger than {descriptionMaxLength} characters.");
 
-        BodyValidation();
+        if (_form.Body is not null)
+            BodyValidation();
+
         _sectionValidator.RunValidations(_form);
     }
 
     private void TitleValidation()
     {
         if (_form.Title is null)
-            throw new Exception("Config file 'title' is empty. You must assing a title to a form.");
+            throw new FormStructException("Config file 'title' is empty. You must assing a title to a form");
 
         if (string.IsNullOrWhiteSpace(_form.Title.Label))
-            throw new Exception("Title 'label' is empty. You must assign a label to the form's title.");
+            throw new FormStructException("Title 'label' is empty. You must assign a label to the form's title");
 
         if (_form.Title.ForegroundColor is not null)
             ColorValidation(_form.Title.ForegroundColor);
@@ -82,11 +85,22 @@ internal class FormValidator : IFormValidator
 
     private void ColorValidation(string text)
     {
-        const string black = "black", blue = "blue", cyan = "cyan",
-            darkBlue = "darkBlue", darkCyan = "darkCyan", darkGray = "darkGray",
-            darkGreen = "darkGreen", darkMagenta = "darkMagenta", darkRed = "darkRed",
-            darkYellow = "darkYello", gray = "gray", green = "green",
-            mangenta = "magenta", red = "red", white = "white", yellow = "yellow";
+        const string black = "black";
+        const string blue = "blue";
+        const string cyan = "cyan";
+        const string darkBlue = "darkBlue";
+        const string darkCyan = "darkCyan";
+        const string darkGray = "darkGray";
+        const string darkGreen = "darkGreen";
+        const string darkMagenta = "darkMagenta";
+        const string darkRed = "darkRed";
+        const string darkYellow = "darkYello";
+        const string gray = "gray";
+        const string green = "green";
+        const string mangenta = "magenta";
+        const string red = "red";
+        const string white = "white";
+        const string yellow = "yellow";
 
         switch (_form.Title.BackgroundColor)
         {
@@ -123,9 +137,9 @@ internal class FormValidator : IFormValidator
             case yellow:
                 break;
             default:
-                throw new Exception($"You must specify a valid color option ({black}, {blue}, {cyan}, {darkBlue}, "
+                throw new FormStructException($"You must specify a valid color option ({black}, {blue}, {cyan}, {darkBlue}, "
                 + $"{darkCyan}, {darkGray}, {darkGreen}, {darkMagenta}, {darkRed}, {gray}, {green}, {mangenta}, "
-                + $"{red}, {white} or {yellow}).");
+                + $"{red}, {white} or {yellow})");
         }
     }
 }

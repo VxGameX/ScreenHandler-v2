@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using ScreenHandler.Configurators;
+using ScreenHandler.Exceptions;
 using ScreenHandler.Settings;
 using ScreenHandler.Validators;
 
@@ -24,7 +25,7 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
 
             var newForm = JsonConvert.DeserializeObject<Form>(json);
             if (newForm is null)
-                throw new Exception($"Could not find any screen file on path {formPath}");
+                throw new FormHandlerBuilderException($"Could not find any screen file on path {formPath}");
 
             _formValidator.RegisterForm(newForm);
 

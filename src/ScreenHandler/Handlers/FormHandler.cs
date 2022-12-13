@@ -1,3 +1,4 @@
+using ScreenHandler.Exceptions;
 using ScreenHandler.Settings;
 
 namespace ScreenHandler.Handlers;
@@ -30,12 +31,13 @@ public sealed class FormHandler : IFormHandler
         }
 
         _isFormCompleted = true;
+        Console.WriteLine("Exit code 0");
     }
 
     public Form GetAnswers()
     {
         if (!_isFormCompleted)
-            throw new Exception("Form is not yet completed");
+            throw new FormHandlerException("Form is not yet completed");
 
         return Form;
     }
@@ -245,13 +247,15 @@ public sealed class FormHandler : IFormHandler
         {
             SetTitleColors();
             CentralizeTitle();
-            SetBodyColors();
+            if (Form.Body is not null)
+                SetBodyColors();
             return;
         }
 
         SetTitleColors();
         Console.WriteLine($"{Form.Title.Label}{Environment.NewLine}");
-        SetBodyColors();
+        if (Form.Body is not null)
+            SetBodyColors();
     }
 
     private void ClearScreen()
@@ -305,7 +309,7 @@ public sealed class FormHandler : IFormHandler
             red => ConsoleColor.Red,
             white => ConsoleColor.White,
             yellow => ConsoleColor.Yellow,
-            _ => throw new Exception("You must select a valid console color.")
+            _ => throw new FormHandlerException("You must select a valid console color.")
         };
     }
 }
