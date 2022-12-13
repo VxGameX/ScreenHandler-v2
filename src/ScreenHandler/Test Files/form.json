@@ -53,22 +53,5 @@
       },
       "required": false
     }
-  ],
-
-  "actions": [
-    {
-      "name": "save",
-      "option": "G",
-      "handler": "Program.Save",
-      "succ": "personEntry",
-      "fail": "personEntryFailure"
-    },
-    {
-      "name": "cancel",
-      "option": "C",
-      "handler": "Program.Cancel",
-      "succ": "EXIT!",
-      "fail": "EXIT!"
-    }
   ]
 }
