@@ -58,7 +58,7 @@
     "/Users/omar.nunez/.nuget/packages/": {}
   },
   "project": {
-    "version": "1.2.0",
+    "version": "1.0.0",
     "restore": {
       "projectUniqueName": "/Users/omar.nunez/Projects/ScreenHandler/ScreenHandler/src/ScreenHandler/ScreenHandler.csproj",
       "projectName": "ScreenHandler",

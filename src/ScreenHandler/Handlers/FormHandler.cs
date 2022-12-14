@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using ScreenHandler.Exceptions;
 using ScreenHandler.Settings;
 
@@ -8,6 +9,7 @@ public sealed class FormHandler : IFormHandler
     internal Form Form { get; set; }
     internal Section CurrentSection { get; set; } = null!;
     private bool _isFormCompleted;
+    private string _answer;
 
     public FormHandler(FormHandlerBuilder builder)
     {
@@ -34,12 +36,17 @@ public sealed class FormHandler : IFormHandler
         Console.WriteLine("Exit code 0");
     }
 
-    public Form GetAnswers()
+    public TEntity GetAnswer<TEntity>()
     {
         if (!_isFormCompleted)
             throw new FormHandlerException("Form is not yet completed");
 
-        return Form;
+        var answer = JsonConvert.DeserializeObject<TEntity>(_answer);
+
+        if (answer is null)
+            throw new FormHandlerException("Answer is not available.");
+
+        return answer;
     }
 
     private void ShowDescription()

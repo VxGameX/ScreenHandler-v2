@@ -4,6 +4,6 @@ namespace ScreenHandler.Handlers;
 
 public interface IFormHandler
 {
-    public Form GetAnswers();
+    public TEntity GetAnswer<TEntity>();
     void Run();
 }

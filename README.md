@@ -57,8 +57,8 @@
 ##### Form parts
 * Description:
     > Required: No
-    >> Type: string
-    >>> Here you can put a short description of your form, with a max length of 500 characters.
+    > Type: string
+    > Here you can put a short description of your form, with a max length of 500 characters.
 
     Example:
     ```json

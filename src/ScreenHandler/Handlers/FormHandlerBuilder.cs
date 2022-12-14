@@ -19,7 +19,6 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
         using (var file = new StreamReader(formPath))
         {
             _formValidator = new FormValidator();
-
             var json = file.ReadToEnd()
                 .Trim();
 
@@ -28,9 +27,7 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
                 throw new FormHandlerBuilderException($"Could not find any screen file on path {formPath}");
 
             _formValidator.RegisterForm(newForm);
-
             Form = newForm;
-
             FormSections = Form.Sections!.ToList();
         }
     }
