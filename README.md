@@ -1,8 +1,13 @@
-# ScreenHandler v.2
+# Screen Handler V.2
 
-Inputs: text, range, checkbox, radiobutton, int, float
 
-Form struct:
+### Config. file types
+* Form
+* Message [^1]
+
+## Form
+#### Form struct:
+```json
 {
   "type": "form",
   "id": "orderRequestForm",
@@ -12,7 +17,11 @@ Form struct:
     "foregroundColor": "white",
     "backgroundColor": "black"
   },
-  "description": "Order requests!",
+  "body": {
+    "foregroundColor": "white",
+    "backgroundColor": "black"
+  },
+  "description": "After you fill out this oreder request, we will contact you to go over details and availability before the order is completed. If you would like faster service and direct information on current stock and pricing please contact us at (123) 456-7890 or no_reply@example.com",
   "sections": [
     {
       "id": "1",
@@ -40,55 +49,71 @@ Form struct:
       },
       "required": false
     }
-  ],
-
-  "actions": [
-    {
-      "name": "save",
-      "option": "G",
-      "handler": "Program.Save",
-      "succ": "personEntry",
-      "fail": "personEntryFailure"
-    },
-    {
-      "name": "cancel",
-      "option": "C",
-      "handler": "Program.Cancel",
-      "succ": "EXIT!",
-      "fail": "EXIT!"
-    }
   ]
 }
+```
 
 
+##### Form parts
+* Description:
+    > Required: No
+    >> Type: string
+    >>> Here you can put a short description of your form, with a max length of 500 characters.
+
+    Example:
+    ```json
+    {
+        ...
+        "description": "Here is a short description!"
+        ...
+    }
+    ```
+
+* Sections:
+    > Required: Yes
+    >> Type: Section Array
+    >>> Here you declare your form's sections.
+    >>>> Required fields:
+        * Id (string)
+        * Label (string)
+        * Input type (string)
+
+    Example:
+    ```json
+    {
+        ...
+        "sections": [
+            {
+                "id": "section1",
+                "label": "This is section 1!"
+                input: {
+                    "type:": "radiobutton",
+                    "options": ["Cool", "Nah"]
+                },
+                required: true
+            },
+            {
+                "id": "section2",
+                "label": "This is not section 3 :p"
+                input: {
+                    "type:": "text"
+                },
+                required: true
+            }
+        ]
+        ...
+    }
+    ```
+    
+* Input:
+    > Required: Yes
+    >> Type: Input
+    >>> Here you 
+    >>>> Required fields:
+        * Type (string) - Values: int, float, text, radiobutton and checkbox
+    
+    >>>>> Contextual fields:
+        * Options (string array) Only required when type is checkbox or radiobutton
 
 
-
-
-
-
-
-
-
-
-
-
-Message struct:
-{
-    "id": "mainScreen",
-    "title": {
-        "label": "Encuesta Amos de Llaves",
-        "centralized": true,
-        "color": "white"
-    },
-    "type": "message",
-    "fields": [
-        { "name": "¿Cree usted que los hombres deban quedarse en casa?", "type": "string", "required": true },
-        { "name": "¿Cree usted que los hombres deban realizar los quehaceres del hogar?", "type": "string", "required": true },
-        { "name": "¿?", "type": "int", "required": true }
-    ],
-    "actions": [
-        { "name": "save", "option": "G", "handler": "Program.Save", "succ": "personEntry", "fail": "personEntryFailure" },
-        { "name": "cancel", "option": "C", "handler": "Program.Cancel", "succ": "EXIT!", "fail": "EXIT!" }
-    ]
-}
+[^1]: I'm working on it!
