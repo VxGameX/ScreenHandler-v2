@@ -71,9 +71,9 @@
 
 * Sections:
     > Required: Yes
-    >> Type: Section Array
-    >>> Here you declare your form's sections.
-    >>>> Required fields:
+    > Type: Section Array
+    > Here you declare your form's sections.
+    > Required fields:
         * Id (string)
         * Label (string)
         * Input type (string)
@@ -85,20 +85,20 @@
         "sections": [
             {
                 "id": "section1",
-                "label": "This is section 1!"
-                input: {
+                "label": "This is section 1!",
+                "input": {
                     "type:": "radiobutton",
                     "options": ["Cool", "Nah"]
                 },
-                required: true
+                "required": true
             },
             {
                 "id": "section2",
-                "label": "This is not section 3 :p"
-                input: {
+                "label": "This is not section 3 :p",
+                "input": {
                     "type:": "text"
                 },
-                required: true
+                "required": true
             }
         ]
         ...
@@ -107,12 +107,12 @@
     
 * Input:
     > Required: Yes
-    >> Type: Input
-    >>> Here you 
-    >>>> Required fields:
+    > Type: Input
+    > Here you 
+    > Required fields:
         * Type (string) - Values: int, float, text, radiobutton and checkbox
     
-    >>>>> Contextual fields:
+    > Contextual fields:
         * Options (string array) Only required when type is checkbox or radiobutton
 
 
