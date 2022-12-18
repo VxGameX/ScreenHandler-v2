@@ -6,7 +6,7 @@ namespace ScreenHandler.Validators;
 public class FormValidator : IFormValidator
 {
     private static ICollection<ConfigFile> _registeredForms;
-    
+
     private Form _form;
     private ISectionValidator _sectionValidator;
 
@@ -35,7 +35,7 @@ public class FormValidator : IFormValidator
 
         if (_form.Type != form)
             throw new FormStructException($"Config file 'type' is {(string.IsNullOrWhiteSpace(_form.Type) ? "empty" : $"'{_form.Type}'")}. "
-            + "You must specify type 'form'.");
+                + "You must specify type 'form'.");
 
         if (string.IsNullOrWhiteSpace(_form.Id))
             throw new FormStructException("Config file 'id' is empty. You must specify a form id.");

@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using MongoDB.Driver;
-using ScreenHandler.Models;
+using ScreenHandler.Entities;
 using ScreenHandler.Repositories;
 
 namespace ScreenHandler.MongoDB;

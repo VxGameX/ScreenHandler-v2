@@ -4,7 +4,7 @@ using ScreenHandler.Models;
 
 namespace ScreenHandler.Handlers;
 
-public sealed class FormHandler : IFormHandler
+public sealed class FormHandler<TEntity> : IFormHandler<TEntity>
 {
     private Section _currentSection = null!;
     private bool _isFormCompleted;
@@ -12,7 +12,7 @@ public sealed class FormHandler : IFormHandler
 
     public Form Form { get; set; }
 
-    public FormHandler(FormHandlerBuilder builder)
+    public FormHandler(IFormHandlerBuilder<TEntity> builder)
     {
         Form = builder.Form;
     }
@@ -34,7 +34,7 @@ public sealed class FormHandler : IFormHandler
         Console.WriteLine("Exit code 0");
     }
 
-    public TEntity GetAnswer<TEntity>()
+    public TEntity GetAnswer()
     {
         if (!_isFormCompleted)
             throw new FormHandlerException("Form is not yet completed");

@@ -4,7 +4,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using ScreenHandler.Models;
+using ScreenHandler.Entities;
 using ScreenHandler.Repositories;
 using ScreenHandler.Settings;
 
@@ -24,10 +24,10 @@ public static class MongoDbExtensions
 
             var serviceSettings = configuration!
                 .GetSection(nameof(ServiceSettings))
-                .Get<ServiceSettings>();
+                .Get<ServiceSettings>()!;
 
             var mongoDbSettings = configuration.GetSection(nameof(MongoDbSettings))
-                .Get<MongoDbSettings>();
+                .Get<MongoDbSettings>()!;
 
             var mongoDbClient = new MongoClient(mongoDbSettings.ConnectionString);
             return mongoDbClient.GetDatabase(serviceSettings.ServiceName);
@@ -37,7 +37,7 @@ public static class MongoDbExtensions
     }
 
     public static IServiceCollection AddMongoRepository<TEntity, TIdentifier>(this IServiceCollection services, string collectionName)
-        where TEntity : Entity<TIdentifier>
+        where TEntity : IEntity<TIdentifier>
         where TIdentifier : struct
     {
         services.AddSingleton<IRepository<TEntity, TIdentifier>>(sp =>

@@ -8,5 +8,5 @@ public class Form : ConfigFile
     public string? Description { get; set; }
 
     [JsonProperty(Order = 6)]
-    public IEnumerable<Section> Sections { get; set; } = null!;
+    public ICollection<Section> Sections { get; set; } = null!;
 }

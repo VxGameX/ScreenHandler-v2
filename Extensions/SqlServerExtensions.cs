@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ScreenHandler.Models;
+using ScreenHandler.Entities;
 using ScreenHandler.Repositories;
 using ScreenHandler.Settings;
 

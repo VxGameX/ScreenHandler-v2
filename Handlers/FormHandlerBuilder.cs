@@ -1,26 +1,23 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using ScreenHandler.Configurators;
 using ScreenHandler.Exceptions;
 using ScreenHandler.Models;
 using ScreenHandler.Validators;
 
 namespace ScreenHandler.Handlers;
 
-public sealed class FormHandlerBuilder : IFormHandlerBuilder
+public sealed class FormHandlerBuilder<TEntity> : IFormHandlerBuilder<TEntity>
 {
-    private readonly ILogger<FormHandlerBuilder> _log;
+    private readonly ILogger<FormHandlerBuilder<TEntity>> _log;
     private readonly IFormValidator _formValidator;
-    private readonly ISectionConfigurator _sectionConfigurator;
+    private readonly IEnumerable<Section> _formSections;
 
     public Form Form { get; set; }
-    public ICollection<Section> FormSections { get; set; }
 
-    public FormHandlerBuilder(ILogger<FormHandlerBuilder> log, IFormValidator formValidator, ISectionConfigurator sectionConfigurator, string formPath)
+    public FormHandlerBuilder(ILogger<FormHandlerBuilder<TEntity>> log, IFormValidator formValidator, string formPath)
     {
         _log = log;
         _formValidator = formValidator;
-        _sectionConfigurator = sectionConfigurator;
 
         try
         {
@@ -33,7 +30,8 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
 
                 _formValidator.RegisterForm(newForm);
                 Form = newForm;
-                FormSections = Form.Sections!.ToList();
+                _formSections = Form.Sections.ToList();
+                Form.Sections.Clear();
             }
         }
         catch (Exception ex)
@@ -43,7 +41,39 @@ public sealed class FormHandlerBuilder : IFormHandlerBuilder
         }
     }
 
-    public IFormHandler Build() => new FormHandler(this);
+    public IFormHandler<TEntity> Build() => new FormHandler<TEntity>(this);
 
-    public ISectionConfigurator SectionsSettings() => _sectionConfigurator;
+    public IFormHandlerBuilder<TEntity> RegisterSection(string sectionId)
+    {
+        if (IsSectionRegistered(sectionId))
+            throw new SectionConfigurationException($"Section '{sectionId}' is already registered.");
+
+        try
+        {
+            var nextSection = _formSections.First(s => s.Id == sectionId);
+            Form.Sections.Add(nextSection);
+            _log.LogDebug("Section {0} registered.", sectionId);
+            return this;
+        }
+        catch (Exception ex)
+        {
+            _log.LogError("There was an error registering the section.", ex);
+            throw;
+        }
+    }
+
+    private bool IsSectionRegistered(string sectionId)
+    {
+        try
+        {
+            var section = Form.Sections.First(rs => rs.Id == sectionId);
+            _log.LogDebug("Section '{0}' is already registered.", section.Id);
+            return true;
+        }
+        catch
+        {
+            _log.LogDebug("Section '{0}' is not registered.", sectionId);
+            return false;
+        }
+    }
 }

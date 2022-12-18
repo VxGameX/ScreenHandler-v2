@@ -1,4 +1,4 @@
-namespace ScreenHandler.Models;
+namespace ScreenHandler.Entities;
 
 public interface IEntity<TIdentifier>
     where TIdentifier : struct

@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using ScreenHandler.Models;
+using ScreenHandler.Entities;
 
 namespace ScreenHandler.Repositories;
 

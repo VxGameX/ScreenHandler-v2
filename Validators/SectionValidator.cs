@@ -5,18 +5,18 @@ namespace ScreenHandler.Validators;
 
 public class SectionValidator : ISectionValidator
 {
+    private const string _text = "text";
     private const string _int = "int";
     private const string _float = "float";
-    private const string _radioButton = "radiobutton";
-    private const string _text = "text";
     private const string _checkBox = "checkbox";
+    private const string _radioButton = "radiobutton";
 
     public void RunValidations(Form form)
     {
         if (form.Sections is null)
             throw new SectionValidationException("Config file 'sections' is empty. You must add at least 1 section to a form.");
 
-        if (form.Sections.FirstOrDefault() is null)
+        if (!form.Sections.Any())
             throw new SectionValidationException("Config file 'sections' is empty. You must add at least 1 section to a form.");
 
         SectionValidation(form.Sections);

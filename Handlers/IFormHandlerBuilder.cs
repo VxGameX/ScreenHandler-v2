@@ -1,11 +1,10 @@
-using ScreenHandler.Configurators;
 using ScreenHandler.Models;
 
 namespace ScreenHandler.Handlers;
 
-public interface IFormHandlerBuilder
+public interface IFormHandlerBuilder<TEntity>
 {
-    ICollection<Section> FormSections { get; set; }
-    IFormHandler Build();
-    ISectionConfigurator SectionsSettings();
+    Form Form { get; set; }
+    IFormHandler<TEntity> Build();
+    IFormHandlerBuilder<TEntity> RegisterSection(string sectionId);
 }
