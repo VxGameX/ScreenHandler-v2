@@ -1,38 +1,49 @@
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ScreenHandler.Configurators;
 using ScreenHandler.Exceptions;
-using ScreenHandler.Settings;
+using ScreenHandler.Models;
 using ScreenHandler.Validators;
 
 namespace ScreenHandler.Handlers;
 
 public sealed class FormHandlerBuilder : IFormHandlerBuilder
 {
-    private IFormValidator _formValidator;
-    internal Form Form { get; set; }
-    internal ICollection<Section> FormSections { get; set; }
+    private readonly ILogger<FormHandlerBuilder> _log;
+    private readonly IFormValidator _formValidator;
+    private readonly ISectionConfigurator _sectionConfigurator;
 
-    public FormHandlerBuilder(string formPath)
+    public Form Form { get; set; }
+    public ICollection<Section> FormSections { get; set; }
+
+    public FormHandlerBuilder(ILogger<FormHandlerBuilder> log, IFormValidator formValidator, ISectionConfigurator sectionConfigurator, string formPath)
     {
-        FormSections = new List<Section>();
+        _log = log;
+        _formValidator = formValidator;
+        _sectionConfigurator = sectionConfigurator;
 
-        using (var file = new StreamReader(formPath))
+        try
         {
-            _formValidator = new FormValidator();
-            var json = file.ReadToEnd()
-                .Trim();
+            using (var file = new StreamReader(formPath))
+            {
+                var json = file.ReadToEnd()
+                    .Trim();
 
-            var newForm = JsonConvert.DeserializeObject<Form>(json);
-            if (newForm is null)
-                throw new FormHandlerBuilderException($"Could not find any screen file on path {formPath}");
+                var newForm = JsonConvert.DeserializeObject<Form>(json)!;
 
-            _formValidator.RegisterForm(newForm);
-            Form = newForm;
-            FormSections = Form.Sections!.ToList();
+                _formValidator.RegisterForm(newForm);
+                Form = newForm;
+                FormSections = Form.Sections!.ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.LogError("There was an error trying to get the Form from '{0}'.", formPath, ex);
+            throw new FormHandlerBuilderException($"Could not find any screen file on path {formPath}");
         }
     }
 
     public IFormHandler Build() => new FormHandler(this);
 
-    public ISectionConfigurator SectionsSettings() => new SectionConfigurator(this);
+    public ISectionConfigurator SectionsSettings() => _sectionConfigurator;
 }

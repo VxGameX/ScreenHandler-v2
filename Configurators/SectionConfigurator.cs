@@ -1,61 +1,63 @@
+using Microsoft.Extensions.Logging;
 using ScreenHandler.Exceptions;
 using ScreenHandler.Handlers;
-using ScreenHandler.Settings;
+using ScreenHandler.Models;
 
 namespace ScreenHandler.Configurators;
 
-public class SectionConfigurator : ISectionConfigurator
+public sealed class SectionConfigurator : ISectionConfigurator
 {
-    private FormHandlerBuilder _formHandlerBuilder;
-    private Form _form;
-    private Section _entryPoint = null!;
-    private static ICollection<Section> _sectionsOrder = null!;
+    private readonly ILogger<SectionConfigurator> _log;
+    private readonly IEnumerable<Section> _fileSections;
+    private IFormHandlerBuilder _formHandlerBuilder;
 
-    public SectionConfigurator(FormHandlerBuilder formHandlerBuilder)
+    public SectionConfigurator(ILogger<SectionConfigurator> log, IFormHandlerBuilder formHandlerBuilder)
     {
-        _form = formHandlerBuilder.Form;
-        _sectionsOrder = new List<Section>();
+        _log = log;
         _formHandlerBuilder = formHandlerBuilder;
+
+        try
+        {
+            _fileSections = _formHandlerBuilder.FormSections;
+        }
+        catch (Exception ex)
+        {
+            _log.LogError("There was an error getting the sections.", ex);
+            throw new FormHandlerBuilderException($"There was an error getting the sections. {ex.Message}");
+        }
     }
 
-    public void SaveOrderSettings() => _formHandlerBuilder.FormSections = _sectionsOrder;
-
-    public ISectionConfigurator SetEntryPoint(string sectionId)
+    public ISectionConfigurator RegisterSection(string sectionId)
     {
-        if (_entryPoint is not null)
-            throw new SectionConfigurationException($"Cannot override entry point. Current entry point {_entryPoint.Id}");
+        if (IsSectionRegistered(sectionId))
+            throw new SectionConfigurationException($"Section '{sectionId}' is already registered.");
 
-        var entryPoint = GetSection(sectionId);
-        _entryPoint = entryPoint;
-        _sectionsOrder.Add(_entryPoint);
-        return this;
-    }
-
-    public ISectionConfigurator SetNextSection(string sectionsId)
-    {
-        if (_entryPoint is null)
-            throw new SectionConfigurationException("You must set an entry point before setting a next section.");
-
-        var nextSection = GetSection(sectionsId);
-        _sectionsOrder.Add(nextSection);
-        return this;
-    }
-
-    private Section GetSection(string sectionId)
-    {
-        if (!IsSectionRegistered(sectionId))
-            throw new SectionConfigurationException($"Section {sectionId} is not registered.");
-
-        var section = _form.Sections!.First(rf => rf.Id == sectionId);
-        return section;
+        try
+        {
+            var nextSection = _fileSections.First(s => s.Id == sectionId);
+            _formHandlerBuilder.FormSections.Add(nextSection);
+            _log.LogDebug("Section {0} registered.", sectionId);
+            return this;
+        }
+        catch (Exception ex)
+        {
+            _log.LogError("There was an error registering the section.", ex);
+            throw;
+        }
     }
 
     private bool IsSectionRegistered(string sectionId)
     {
-        var section = _form.Sections!.FirstOrDefault(rs => rs.Id == sectionId);
-        if (section is null)
+        try
+        {
+            var section = _formHandlerBuilder.FormSections.First(rs => rs.Id == sectionId);
+            _log.LogDebug("Section '{0}' is already registered.", section.Id);
+            return true;
+        }
+        catch
+        {
+            _log.LogDebug("Section '{0}' is not registered.", sectionId);
             return false;
-
-        return true;
+        }
     }
 }

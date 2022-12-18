@@ -1,9 +1,10 @@
-using ScreenHandler.Settings;
+using ScreenHandler.Models;
 
 namespace ScreenHandler.Handlers;
 
 public interface IFormHandler
 {
-    public TEntity GetAnswer<TEntity>();
+    Form Form { get; set; }
     void Run();
+    TEntity GetAnswer<TEntity>();
 }

@@ -7,4 +7,3 @@ public interface IMessageHandler
 {
     void ShowMessage(string messageId);
 }
-

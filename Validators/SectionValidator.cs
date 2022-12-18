@@ -1,9 +1,9 @@
 using ScreenHandler.Exceptions;
-using ScreenHandler.Settings;
+using ScreenHandler.Models;
 
 namespace ScreenHandler.Validators;
 
-internal class SectionValidator : ISectionValidator
+public class SectionValidator : ISectionValidator
 {
     private const string _int = "int";
     private const string _float = "float";

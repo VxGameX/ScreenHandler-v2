@@ -1,23 +1,21 @@
 using Newtonsoft.Json;
 using ScreenHandler.Exceptions;
-using ScreenHandler.Settings;
+using ScreenHandler.Models;
 
 namespace ScreenHandler.Handlers;
 
 public sealed class FormHandler : IFormHandler
 {
-    internal Form Form { get; set; }
-    internal Section CurrentSection { get; set; } = null!;
+    private Section _currentSection = null!;
     private bool _isFormCompleted;
     private string _answer;
+
+    public Form Form { get; set; }
 
     public FormHandler(FormHandlerBuilder builder)
     {
         Form = builder.Form;
-        Form.Sections = builder.FormSections;
     }
-
-    public static IFormHandlerBuilder CreateBuilder(string formPath) => new FormHandlerBuilder(formPath);
 
     public void Run()
     {
@@ -55,7 +53,7 @@ public sealed class FormHandler : IFormHandler
         Pause();
     }
 
-    private void SetCurrentSection(Section section) => CurrentSection = section;
+    private void SetCurrentSection(Section section) => _currentSection = section;
 
     private void ShowSection()
     {
@@ -63,7 +61,7 @@ public sealed class FormHandler : IFormHandler
         {
             ClearScreen();
             ShowLabel();
-            if (CurrentSection.Input.Type is "checkbox" or "radiobutton")
+            if (_currentSection.Input.Type is "checkbox" or "radiobutton")
             {
                 ShowOptions();
                 break;
@@ -162,7 +160,7 @@ public sealed class FormHandler : IFormHandler
     private void ShowOptions()
     {
         var counter = 1;
-        switch (CurrentSection.Input.Type)
+        switch (_currentSection.Input.Type)
         {
             case "radiobutton":
                 do
@@ -172,16 +170,16 @@ public sealed class FormHandler : IFormHandler
                     ShowLabel();
 
                     counter = 1;
-                    foreach (var option in CurrentSection.Input.Options!)
+                    foreach (var option in _currentSection.Input.Options!)
                     {
                         var selectedOption = 0;
-                        if (CurrentSection.Input.SelectedOptions is not null)
-                            selectedOption = CurrentSection.Input.SelectedOptions.FirstOrDefault();
+                        if (_currentSection.Input.SelectedOptions is not null)
+                            selectedOption = _currentSection.Input.SelectedOptions.FirstOrDefault();
 
-                        Console.WriteLine($"{counter++} - ({(selectedOption != (CurrentSection.Input.Options.IndexOf(option) + 1) ? " " : "X")}) {option}");
+                        Console.WriteLine($"{counter++} - ({(selectedOption != (_currentSection.Input.Options.IndexOf(option) + 1) ? " " : "X")}) {option}");
                     }
 
-                    if (SelectOption(CurrentSection.Input, CurrentSection.Required, counter))
+                    if (SelectOption(_currentSection.Input, _currentSection.Required, counter))
                         break;
                 } while (true);
                 break;
@@ -193,16 +191,16 @@ public sealed class FormHandler : IFormHandler
                     ShowLabel();
 
                     counter = 1;
-                    foreach (var option in CurrentSection.Input.Options!)
+                    foreach (var option in _currentSection.Input.Options!)
                     {
                         var selectedOption = 0;
-                        if (CurrentSection.Input.SelectedOptions is not null)
-                            selectedOption = CurrentSection.Input.SelectedOptions.FirstOrDefault(op => op == (CurrentSection.Input.Options.IndexOf(option) + 1));
+                        if (_currentSection.Input.SelectedOptions is not null)
+                            selectedOption = _currentSection.Input.SelectedOptions.FirstOrDefault(op => op == (_currentSection.Input.Options.IndexOf(option) + 1));
 
                         Console.WriteLine($"{counter++} - [{(selectedOption is 0 ? " " : "X")}] {option}");
                     }
 
-                    if (SelectOption(CurrentSection.Input, CurrentSection.Required, counter))
+                    if (SelectOption(_currentSection.Input, _currentSection.Required, counter))
                         break;
                 } while (true);
                 break;
@@ -211,31 +209,31 @@ public sealed class FormHandler : IFormHandler
         }
     }
 
-    private void ShowLabel() => Console.WriteLine($"{CurrentSection.Label} {(CurrentSection.Required ? "*" : string.Empty)}{Environment.NewLine}");
+    private void ShowLabel() => Console.WriteLine($"{_currentSection.Label} {(_currentSection.Required ? "*" : string.Empty)}{Environment.NewLine}");
 
     private static void Pause() => Console.ReadKey(true);
 
     private bool IsValidAnswer(string answer, out string message)
     {
-        if (CurrentSection.Required && string.IsNullOrWhiteSpace(answer))
+        if (_currentSection.Required && string.IsNullOrWhiteSpace(answer))
         {
             message = "Cannot leave required (*) sections empty.";
             return false;
         }
 
-        if (CurrentSection.Input.Type == "int" && !int.TryParse(answer, out int _))
+        if (_currentSection.Input.Type == "int" && !int.TryParse(answer, out int _))
         {
             message = "Answer must be an integer number.";
             return false;
         }
 
-        if (CurrentSection.Input.Type == "float" && !double.TryParse(answer, out double _))
+        if (_currentSection.Input.Type == "float" && !double.TryParse(answer, out double _))
         {
             message = "Answer must be a floating point number.";
             return false;
         }
 
-        CurrentSection.Input.Answer = answer;
+        _currentSection.Input.Answer = answer;
         message = string.Empty;
         return true;
     }

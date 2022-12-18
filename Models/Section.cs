@@ -1,4 +1,4 @@
-namespace ScreenHandler.Settings;
+namespace ScreenHandler.Models;
 
 public class Section
 {

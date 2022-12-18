@@ -1,4 +1,4 @@
-using ScreenHandler.Settings;
+using ScreenHandler.Models;
 
 namespace ScreenHandler.Handlers;
 

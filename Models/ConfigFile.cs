@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace ScreenHandler.Settings;
+namespace ScreenHandler.Models;
 
 public class ConfigFile
 {

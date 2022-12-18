@@ -1,20 +1,21 @@
 using ScreenHandler.Exceptions;
-using ScreenHandler.Settings;
+using ScreenHandler.Models;
 
 namespace ScreenHandler.Validators;
 
-internal class FormValidator : IFormValidator
+public class FormValidator : IFormValidator
 {
     private static ICollection<ConfigFile> _registeredForms;
+    
     private Form _form;
     private ISectionValidator _sectionValidator;
 
     static FormValidator() => _registeredForms = new List<ConfigFile>();
 
-    public FormValidator()
+    public FormValidator(ISectionValidator sectionValidator)
     {
         _form = null!;
-        _sectionValidator = new SectionValidator();
+        _sectionValidator = sectionValidator;
     }
 
     public void RegisterForm(Form form)
