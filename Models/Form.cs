@@ -4,9 +4,9 @@ namespace ScreenHandler.Models;
 
 public class Form : ConfigFile
 {
-    [JsonProperty(Order = 5)]
+    [JsonProperty(Order = 4)]
     public string? Description { get; set; }
 
-    [JsonProperty(Order = 6)]
+    [JsonProperty(Order = 5)]
     public ICollection<Section> Sections { get; set; } = null!;
 }

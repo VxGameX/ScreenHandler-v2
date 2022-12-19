@@ -8,11 +8,8 @@ public class ConfigFile
     public string Type { get; set; } = null!;
 
     [JsonProperty(Order = 2)]
-    public string Id { get; set; } = null!;
-
-    [JsonProperty(Order = 3)]
     public Title Title { get; set; } = null!;
 
-    [JsonProperty(Order = 4)]
+    [JsonProperty(Order = 3)]
     public Body Body { get; set; } = null!;
 }
