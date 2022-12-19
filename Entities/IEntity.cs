@@ -1,7 +1,6 @@
 namespace ScreenHandler.Entities;
 
-public interface IEntity<TIdentifier>
-    where TIdentifier : struct
+public interface IEntity
 {
-    TIdentifier Id { get; set; }
+    int Id { get; set; }
 }
