@@ -36,14 +36,13 @@ public static class MongoDbExtensions
         return services;
     }
 
-    public static IServiceCollection AddMongoRepository<TEntity, TIdentifier>(this IServiceCollection services, string collectionName)
-        where TEntity : IEntity<TIdentifier>
-        where TIdentifier : struct
+    public static IServiceCollection AddMongoRepository<TEntity>(this IServiceCollection services, string collectionName)
+        where TEntity : IEntity
     {
-        services.AddSingleton<IRepository<TEntity, TIdentifier>>(sp =>
+        services.AddSingleton<IRepository<TEntity>>(sp =>
         {
             var database = sp.GetService<IMongoDatabase>();
-            return new MongoRepository<TEntity, TIdentifier>(database!, collectionName);
+            return new MongoRepository<TEntity>(database!, collectionName);
         });
 
         return services;

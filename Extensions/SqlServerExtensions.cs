@@ -23,12 +23,11 @@ public static class SqlServerExtensions
         return services;
     }
 
-    public static IServiceCollection AddSqlRepository<TRepository, TEntity, TIdentifier>(this IServiceCollection services)
-        where TRepository : class, IRepository<TEntity, TIdentifier>
-        where TEntity : IEntity<TIdentifier>
-        where TIdentifier : struct
+    public static IServiceCollection AddSqlRepository<TRepository, TEntity>(this IServiceCollection services)
+        where TRepository : class, IRepository<TEntity>
+        where TEntity : IEntity
     {
-        services.AddScoped<IRepository<TEntity, TIdentifier>, TRepository>();
+        services.AddScoped<IRepository<TEntity>, TRepository>();
         return services;
     }
 }
