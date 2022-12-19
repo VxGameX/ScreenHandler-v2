@@ -5,9 +5,8 @@ using ScreenHandler.Repositories;
 
 namespace ScreenHandler.MongoDB;
 
-public class MongoRepository<TEntity, TIdentifier> : IRepository<TEntity, TIdentifier>
-    where TEntity : IEntity<TIdentifier>
-    where TIdentifier : struct
+public class MongoRepository<TEntity> : IRepository<TEntity>
+    where TEntity : IEntity
 {
     private readonly IMongoCollection<TEntity> _dbCollection;
     private readonly FilterDefinitionBuilder<TEntity> _filterBuilder = Builders<TEntity>.Filter;
@@ -18,7 +17,7 @@ public class MongoRepository<TEntity, TIdentifier> : IRepository<TEntity, TIdent
 
     public async Task DeleteAsync(Expression<Func<TEntity, bool>> filter) => await _dbCollection.DeleteOneAsync(filter);
 
-    public async Task DeleteAsync(TIdentifier id)
+    public async Task DeleteAsync(int id)
     {
         var filter = _filterBuilder.Eq(e => e.Id, id);
         await _dbCollection.DeleteOneAsync(filter);
@@ -57,7 +56,7 @@ public class MongoRepository<TEntity, TIdentifier> : IRepository<TEntity, TIdent
         return entity;
     }
 
-    public async Task<TEntity?> GetAsync(TIdentifier id)
+    public async Task<TEntity?> GetAsync(int id)
     {
         var filter = _filterBuilder.Eq(e => e.Id, id);
         var entity = await _dbCollection.Find(filter)
