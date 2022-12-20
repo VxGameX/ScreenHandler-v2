@@ -8,7 +8,7 @@ using ScreenHandler.Entities;
 using ScreenHandler.Repositories;
 using ScreenHandler.Settings;
 
-namespace ScreenHandler.MongoDB;
+namespace ScreenHandler.Extensions;
 
 /// <summary>
 /// Manages MongoDB repositories.

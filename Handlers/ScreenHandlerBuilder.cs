@@ -5,7 +5,7 @@ using ScreenHandler.Validators;
 
 namespace ScreenHandler.Handlers;
 
-public sealed class ScreenHandlerBuilder : IScreenHandlerBuilder
+public sealed class ScreenHandlerBuilder : IHandlerBuilder<ScreenHandler>
 {
     private readonly IScreenValidator _screenValidator = new ScreenValidator();
 
@@ -28,9 +28,9 @@ public sealed class ScreenHandlerBuilder : IScreenHandlerBuilder
         }
         catch
         {
-            throw new FormHandlerBuilderException($"Could not find any screen file on path {screenPath}");
+            throw new ScreenHandlerBuilderException($"Could not find any screen file on path {screenPath}");
         }
     }
 
-    public IScreenHandler Build() => new ScreenHandler(this);
+    public ScreenHandler Build() => new(this);
 }

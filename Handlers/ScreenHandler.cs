@@ -1,93 +1,54 @@
-using Newtonsoft.Json;
-using ScreenHandler.Exceptions;
 using ScreenHandler.Models;
 
 namespace ScreenHandler.Handlers;
 
-public sealed class ScreenHandler : IScreenHandler
+public sealed class ScreenHandler : IHandler
 {
-    private const string _radioButton = "radiobutton";
-    private const string _checkBox = "checkbox";
-
-    private Section _currentSection = null!;
+    private readonly ScreenDefinition _screen;
+    private readonly IHandler _sectionHandler;
+    private readonly IHandler _actionHandler;
     private bool _isFormCompleted;
 
-    public ScreenDefinition Screen { get; set; }
+    public string Title => _screen.Title;
+    public IEnumerable<Section> Sections => _screen.Sections;
+    public IEnumerable<Models.Action> Actions => _screen.Actions;
 
-    public ScreenHandler(IScreenHandlerBuilder builder) => Screen = builder.Screen;
+    public ScreenHandler(ScreenHandlerBuilder builder)
+    {
+        _screen = builder.Screen;
+        _sectionHandler = new SectionHandler(this);
+        _actionHandler = new ActionHandler(this);
+    }
 
-    public static IScreenHandlerBuilder CreateBuilder(string formPath) => new ScreenHandlerBuilder(formPath);
+    public static IHandlerBuilder<ScreenHandler> CreateBuilder(string formPath) => new ScreenHandlerBuilder(formPath);
 
     public void Run()
     {
-        ClearScreen();
         SetTitle();
-        foreach (var section in Screen.Sections)
-        {
-            SetCurrentSection(section);
-            ShowSection();
-        }
+
+        _sectionHandler.Run();
+        _actionHandler.Run();
 
         _isFormCompleted = true;
         Console.WriteLine("Exit code 0.");
     }
 
-    public TEntity GetAnswer<TEntity>()
-    {
-        if (!_isFormCompleted)
-            throw new FormHandlerException("Form is not yet completed");
+    // public TEntity GetAnswer<TEntity>()
+    // {
+    //     if (!_isFormCompleted)
+    //         throw new FormHandlerException("Form is not yet completed");
 
-        var x = JsonConvert.SerializeObject("");
+    //     var x = JsonConvert.SerializeObject("");
 
-        var answer = JsonConvert.DeserializeObject<TEntity>(x);
+    //     var answer = JsonConvert.DeserializeObject<TEntity>(x);
 
-        if (answer is null)
-            throw new FormHandlerException("Answer is not available.");
+    //     if (answer is null)
+    //         throw new FormHandlerException("Answer is not available.");
 
-        return answer;
-    }
+    //     return answer;
+    // }
 
-    private void SetCurrentSection(Section section) => _currentSection = section;
-
-    private void ShowSection()
-    {
-        do
-        {
-            ClearScreen();
-            ShowLabel();
-
-            Console.Write(">> ");
-            var answer = Console.ReadLine() ?? string.Empty;
-
-            if (IsValidAnswer(answer))
-                break;
-
-            ClearScreen();
-            Console.Write("Cannot leave required (*) sections empty.");
-            Pause();
-        }
-        while (true);
-    }
-
-    private void ShowLabel() => Console.WriteLine($"{_currentSection.Label} {(_currentSection.Required ? "*" : string.Empty)}{Environment.NewLine}");
-
-    private static void Pause() => Console.ReadKey(true);
-
-    private bool IsValidAnswer(string answer) => !(_currentSection.Required && string.IsNullOrWhiteSpace(answer));
-
-    private void SetTitle() => Console.Title = Screen.Title;
-
-    private void ShowTitle()
-    {
-        Console.WriteLine($"{Screen.Title}{Environment.NewLine}");
-    }
-
-    private void ClearScreen()
-    {
-        Console.ResetColor();
-        Console.Clear();
-        ShowTitle();
-    }
+    private void SetTitle() => Console.Title = _screen.Title;
 
     // private void CentralizeTitle()
     // {

@@ -1,8 +1,8 @@
 namespace ScreenHandler.Exceptions;
 
-public class FormHandlerException : Exception
+public class ScreenStructException : Exception
 {
-    public FormHandlerException(string message)
+    public ScreenStructException(string message)
         : base($"{message}{(message.LastOrDefault() == '.' ? string.Empty : ".")}{Environment.NewLine}{Environment.NewLine}Exit code: -1")
     {
     }

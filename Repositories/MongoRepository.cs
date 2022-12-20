@@ -1,9 +1,8 @@
 using System.Linq.Expressions;
 using MongoDB.Driver;
 using ScreenHandler.Entities;
-using ScreenHandler.Repositories;
 
-namespace ScreenHandler.MongoDB;
+namespace ScreenHandler.Repositories;
 
 public class MongoRepository<TEntity> : IRepository<TEntity>
     where TEntity : IEntity

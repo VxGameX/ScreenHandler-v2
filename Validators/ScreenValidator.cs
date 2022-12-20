@@ -10,7 +10,7 @@ public class ScreenValidator : IScreenValidator
     public void RegisterForm(ScreenDefinition form)
     {
         if (IsFormRegistered(form.Id))
-            throw new FormStructException($"Form ID {form.Id} is already registered.");
+            throw new ScreenStructException($"Form ID {form.Id} is already registered.");
 
         RunValidations(form);
         _registeredForms.Add(form);
@@ -19,10 +19,10 @@ public class ScreenValidator : IScreenValidator
     private void RunValidations(ScreenDefinition form)
     {
         if (string.IsNullOrWhiteSpace(form.Id))
-            throw new FormStructException("Config file 'id' is empty. You must specify a form id.");
+            throw new ScreenStructException("Config file 'id' is empty. You must specify a form id.");
 
         if (string.IsNullOrWhiteSpace(form.Title))
-            throw new FormStructException("Config file 'title' is empty. You must assing a title to a form");
+            throw new ScreenStructException("Config file 'title' is empty. You must assing a title to a form");
 
         if (form.Sections is null || !form.Sections.Any())
             throw new SectionValidationException("Config file 'sections' is empty. You must add at least 1 section to a form.");
