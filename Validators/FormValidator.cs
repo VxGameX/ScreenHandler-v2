@@ -5,18 +5,10 @@ namespace ScreenHandler.Validators;
 
 public class FormValidator : IFormValidator
 {
-    private static ICollection<ConfigFile> _registeredForms;
+    private static ICollection<ConfigFile> _registeredForms = new List<ConfigFile>();
 
-    private Form _form;
-    private ISectionValidator _sectionValidator;
-
-    static FormValidator() => _registeredForms = new List<ConfigFile>();
-
-    public FormValidator(ISectionValidator sectionValidator)
-    {
-        _form = null!;
-        _sectionValidator = sectionValidator;
-    }
+    private Form _form = null!;
+    private ISectionValidator _sectionValidator = new SectionValidator();
 
     public void RegisterForm(Form form)
     {

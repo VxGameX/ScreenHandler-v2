@@ -6,18 +6,16 @@ using ScreenHandler.Validators;
 
 namespace ScreenHandler.Handlers;
 
-public sealed class FormHandlerBuilder<TEntity> : IFormHandlerBuilder<TEntity>
+public sealed class FormHandlerBuilder : IFormHandlerBuilder
 {
-    private readonly ILogger<FormHandlerBuilder<TEntity>> _log;
     private readonly IFormValidator _formValidator;
     private readonly IEnumerable<Section> _formSections;
 
     public Form Form { get; set; }
 
-    public FormHandlerBuilder(ILogger<FormHandlerBuilder<TEntity>> log, IFormValidator formValidator, string formPath)
+    public FormHandlerBuilder(string formPath)
     {
-        _log = log;
-        _formValidator = formValidator;
+        _formValidator = new FormValidator();
 
         try
         {
@@ -41,26 +39,7 @@ public sealed class FormHandlerBuilder<TEntity> : IFormHandlerBuilder<TEntity>
         }
     }
 
-    public IFormHandler<TEntity> Build() => new FormHandler<TEntity>(this);
-
-    public IFormHandlerBuilder<TEntity> RegisterSection(string sectionId)
-    {
-        if (IsSectionRegistered(sectionId))
-            throw new SectionConfigurationException($"Section '{sectionId}' is already registered.");
-
-        try
-        {
-            var nextSection = _formSections.First(s => s.Id == sectionId);
-            Form.Sections.Add(nextSection);
-            _log.LogDebug("Section {0} registered.", sectionId);
-            return this;
-        }
-        catch (Exception ex)
-        {
-            _log.LogError("There was an error registering the section.", ex);
-            throw;
-        }
-    }
+    public IFormHandler Build() => new FormHandler(this);
 
     private bool IsSectionRegistered(string sectionId)
     {

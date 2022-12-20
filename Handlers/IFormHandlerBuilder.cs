@@ -2,9 +2,8 @@ using ScreenHandler.Models;
 
 namespace ScreenHandler.Handlers;
 
-public interface IFormHandlerBuilder<TEntity>
+public interface IFormHandlerBuilder
 {
     Form Form { get; set; }
-    IFormHandler<TEntity> Build();
-    IFormHandlerBuilder<TEntity> RegisterSection(string sectionId);
+    IFormHandler Build();
 }

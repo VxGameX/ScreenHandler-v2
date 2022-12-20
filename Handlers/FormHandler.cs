@@ -4,18 +4,19 @@ using ScreenHandler.Models;
 
 namespace ScreenHandler.Handlers;
 
-public sealed class FormHandler<TEntity> : IFormHandler<TEntity>
+public sealed class FormHandler : IFormHandler
 {
+    private const string _radioButton = "radiobutton";
+    private const string _checkBox = "checkbox";
+
     private Section _currentSection = null!;
     private bool _isFormCompleted;
-    private string _answer;
 
     public Form Form { get; set; }
 
-    public FormHandler(IFormHandlerBuilder<TEntity> builder)
-    {
-        Form = builder.Form;
-    }
+    public FormHandler(IFormHandlerBuilder builder) => Form = builder.Form;
+
+    public static IFormHandlerBuilder CreateBuilder(string formPath) => new FormHandlerBuilder(formPath);
 
     public void Run()
     {
@@ -24,22 +25,24 @@ public sealed class FormHandler<TEntity> : IFormHandler<TEntity>
         if (!string.IsNullOrWhiteSpace(Form.Description))
             ShowDescription();
 
-        foreach (var section in Form.Sections!)
+        foreach (var section in Form.Sections)
         {
             SetCurrentSection(section);
             ShowSection();
         }
 
         _isFormCompleted = true;
-        Console.WriteLine("Exit code 0");
+        Console.WriteLine("Exit code 0.");
     }
 
-    public TEntity GetAnswer()
+    public TEntity GetAnswer<TEntity>()
     {
         if (!_isFormCompleted)
             throw new FormHandlerException("Form is not yet completed");
 
-        var answer = JsonConvert.DeserializeObject<TEntity>(_answer);
+        var x = JsonConvert.SerializeObject(_answers);
+
+        var answer = JsonConvert.DeserializeObject<TAnswerEntity>(x);
 
         if (answer is null)
             throw new FormHandlerException("Answer is not available.");
@@ -61,7 +64,7 @@ public sealed class FormHandler<TEntity> : IFormHandler<TEntity>
         {
             ClearScreen();
             ShowLabel();
-            if (_currentSection.Input.Type is "checkbox" or "radiobutton")
+            if (_currentSection.Input.Type is _checkBox or _radioButton)
             {
                 ShowOptions();
                 break;
@@ -83,8 +86,8 @@ public sealed class FormHandler<TEntity> : IFormHandler<TEntity>
 
     private bool SelectOption(Input input, bool required, int counter)
     {
-        if (input.SelectedOptions is null)
-            input.SelectedOptions = new List<int>();
+        if (_answers.SelectedOptions is null)
+            _answers.SelectedOptions = new List<string>();
 
         Console.Write($"{Environment.NewLine}>> ");
         var option = Console.ReadLine()?
@@ -96,9 +99,9 @@ public sealed class FormHandler<TEntity> : IFormHandler<TEntity>
         if (selectedOption == 0)
             return true;
 
-        if (input.Type == "radiobutton")
+        if (input.Type == _radioButton)
         {
-            var radioOption = input.SelectedOptions!.FirstOrDefault();
+            var radioOption = input.Answer.SelectedOptions.FirstOrDefault();
             if (radioOption == selectedOption)
             {
                 input.SelectedOptions.Remove(radioOption);
@@ -109,9 +112,9 @@ public sealed class FormHandler<TEntity> : IFormHandler<TEntity>
                 input.SelectedOptions.Remove(radioOption);
         }
 
-        if (input.Type == "checkbox")
+        if (input.Type == _checkBox)
         {
-            var checkboxOption = input.SelectedOptions!.FirstOrDefault(so => so == selectedOption);
+            var checkboxOption = input.Answer.SelectedOptions!.FirstOrDefault(so => so == selectedOption);
             if (checkboxOption == selectedOption)
             {
                 input.SelectedOptions.Remove(checkboxOption);
@@ -130,7 +133,7 @@ public sealed class FormHandler<TEntity> : IFormHandler<TEntity>
             switch (option)
             {
                 case "":
-                    if (required && input.SelectedOptions?.FirstOrDefault() == 0)
+                    if (required && !input.Answer.SelectedOptions!.Any())
                     {
                         ClearScreen();
                         Console.Write("Cannot leave required (*) sections empty.");
@@ -159,20 +162,19 @@ public sealed class FormHandler<TEntity> : IFormHandler<TEntity>
 
     private void ShowOptions()
     {
-        var counter = 1;
+        int counter;
         switch (_currentSection.Input.Type)
         {
-            case "radiobutton":
+            case _radioButton:
                 do
                 {
                     ClearScreen();
-                    // TODO: Set required mark to RED
                     ShowLabel();
 
                     counter = 1;
                     foreach (var option in _currentSection.Input.Options!)
                     {
-                        var selectedOption = 0;
+                        string selectedOption;
                         if (_currentSection.Input.SelectedOptions is not null)
                             selectedOption = _currentSection.Input.SelectedOptions.FirstOrDefault();
 
@@ -183,11 +185,10 @@ public sealed class FormHandler<TEntity> : IFormHandler<TEntity>
                         break;
                 } while (true);
                 break;
-            case "checkbox":
+            case _checkBox:
                 do
                 {
                     ClearScreen();
-                    // TODO: Set required mark to RED
                     ShowLabel();
 
                     counter = 1;
