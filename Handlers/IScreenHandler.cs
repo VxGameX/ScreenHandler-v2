@@ -2,10 +2,9 @@ using ScreenHandler.Models;
 
 namespace ScreenHandler.Handlers;
 
-public interface IFormHandler
+public interface IScreenHandler
 {
-    Form Form { get; set; }
-
+    ScreenDefinition Screen { get; set; }
     void Run();
     TEntity GetAnswer<TEntity>();
 }
