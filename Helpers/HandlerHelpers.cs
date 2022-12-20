@@ -2,7 +2,7 @@ namespace ScreenHandler.Helpers;
 
 public static class HandlerHelpers
 {
-    private static string _screenTitle = "";
+    public static string ScreenTitle { get; set; } = null!;
 
     public static void ClearScreen()
     {
@@ -11,7 +11,7 @@ public static class HandlerHelpers
         ShowTitle();
     }
 
-    private static void ShowTitle() => Console.WriteLine($"{_screenTitle}{Environment.NewLine}");
+    private static void ShowTitle() => Console.WriteLine($"{ScreenTitle}{Environment.NewLine}");
 
     public static void Pause() => Console.ReadKey(true);
 }

@@ -1,3 +1,4 @@
+using ScreenHandler.Helpers;
 using ScreenHandler.Models;
 
 namespace ScreenHandler.Handlers;
@@ -13,7 +14,7 @@ public sealed class ScreenHandler : IHandler
     public IEnumerable<Section> Sections => _screen.Sections;
     public IEnumerable<Models.Action> Actions => _screen.Actions;
 
-    public ScreenHandler(ScreenHandlerBuilder builder)
+    internal ScreenHandler(ScreenHandlerBuilder builder)
     {
         _screen = builder.Screen;
         _sectionHandler = new SectionHandler(this);
@@ -48,7 +49,11 @@ public sealed class ScreenHandler : IHandler
     //     return answer;
     // }
 
-    private void SetTitle() => Console.Title = _screen.Title;
+    private void SetTitle()
+    {
+        Console.Title = _screen.Title;
+        HandlerHelpers.ScreenTitle = _screen.Title;
+    }
 
     // private void CentralizeTitle()
     // {

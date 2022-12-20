@@ -5,7 +5,7 @@ using ScreenHandler.Validators;
 
 namespace ScreenHandler.Handlers;
 
-public sealed class ScreenHandlerBuilder : IHandlerBuilder<ScreenHandler>
+internal sealed class ScreenHandlerBuilder : IHandlerBuilder<ScreenHandler>
 {
     private readonly IScreenValidator _screenValidator = new ScreenValidator();
 
