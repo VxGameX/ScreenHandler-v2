@@ -34,6 +34,7 @@ public class ActionHandler : IHandler
                 continue;
             }
             RunAction(selectedAction);
+            break;
         } while (true);
     }
 
