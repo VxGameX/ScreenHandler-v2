@@ -6,9 +6,9 @@ namespace ScreenHandler.Extensions;
 
 public static class ScreenHandlerExtensions
 {
-    public static IServiceCollection AddCurrentAssembly(this IServiceCollection services, string assembly)
+    public static IServiceCollection AddExecutingAssembly(this IServiceCollection services, Assembly executingAssembly)
     {
-        ActionHandler.ClientAssembly = Assembly.Load(assembly);
+        ActionHandler.ExecutingAssembly = executingAssembly;
         return services;
     }
 }
