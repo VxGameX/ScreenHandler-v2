@@ -4,6 +4,4 @@ public class Input
 {
     public string Type { get; set; } = null!;
     public IList<string>? Options { get; set; }
-    public ICollection<string>? SelectedOptions { get; set; }
-    public string? Answer { get; set; }
 }
