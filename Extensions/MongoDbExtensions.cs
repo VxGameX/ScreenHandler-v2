@@ -10,8 +10,14 @@ using ScreenHandler.Settings;
 
 namespace ScreenHandler.MongoDB;
 
+/// <summary>
+/// Manages MongoDB repositories.
+/// </summary>
 public static class MongoDbExtensions
 {
+    /// <summary>
+    /// Adds IMongoDatabase to the Dependency Injection IServiceCollection.
+    /// </summary>
     public static IServiceCollection AddMongo(this IServiceCollection services)
     {
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
@@ -36,6 +42,11 @@ public static class MongoDbExtensions
         return services;
     }
 
+    /// <summary>
+    /// Adds an IRepository to the Dependency Injection IServiceCollection.
+    /// </summary>
+    /// <typeparam name="TEntity">Entity type of the repository.</typeparam>
+    /// <param name="collectionName">The name of the collection in the database.</param>
     public static IServiceCollection AddMongoRepository<TEntity>(this IServiceCollection services, string collectionName)
         where TEntity : IEntity
     {
