@@ -1,4 +1,5 @@
 using System.Reflection;
+using ScreenHandler.Configurators;
 using ScreenHandler.Helpers;
 
 namespace ScreenHandler.Handlers;
@@ -7,8 +8,6 @@ public class ActionHandler : IHandler
 {
     private readonly IEnumerable<Models.Action> _actions;
     private Models.Action _currentAction = null!;
-
-    internal static Assembly ExecutingAssembly { get; set; } = null!;
 
     public ActionHandler(ScreenHandler handler) => _actions = handler.Actions;
 
@@ -50,7 +49,7 @@ public class ActionHandler : IHandler
             return;
         }
 
-        var type = ExecutingAssembly.GetType(selectedAction.Handler);
+        var type = AssemblyConfigurator.ExecutingAssembly.GetType(selectedAction.Handler);
 
         if (type is null)
             throw new Exception($"Could not find handler '{selectedAction.Handler}'.");
