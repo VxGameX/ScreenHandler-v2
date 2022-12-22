@@ -11,7 +11,7 @@ internal sealed class ScreenHandlerBuilder : IHandlerBuilder<ScreenHandler>
 
     public ScreenDefinition Screen { get; set; }
 
-    public ScreenHandlerBuilder(string screenPath)
+    internal ScreenHandlerBuilder(string screenPath)
     {
         try
         {

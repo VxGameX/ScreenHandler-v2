@@ -1,4 +1,3 @@
-using System.Reflection;
 using ScreenHandler.Configurators;
 using ScreenHandler.Helpers;
 

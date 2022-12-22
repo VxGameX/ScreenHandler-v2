@@ -3,11 +3,13 @@ using ScreenHandler.Models;
 
 namespace ScreenHandler.Handlers;
 
-public class SectionHandler : IHandler
+public class SectionHandler : IHandler, IResponse
 {
     private Section _currentSection = null!;
     private readonly IEnumerable<Section> _sections;
     private readonly string _screenTitle;
+
+    public IDictionary<string, string> Data { get; set; } = new Dictionary<string, string>();
 
     public SectionHandler(ScreenHandler handler)
     {
@@ -37,7 +39,10 @@ public class SectionHandler : IHandler
             var answer = Console.ReadLine() ?? string.Empty;
 
             if (IsValidAnswer(answer))
+            {
+                Data.Add(_currentSection.Id, answer);
                 break;
+            }
 
             HandlerHelpers.ClearScreen();
             Console.Write("Cannot leave required (*) sections empty.");

@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using ScreenHandler.Exceptions;
 using ScreenHandler.Helpers;
 using ScreenHandler.Models;
 
@@ -8,6 +10,7 @@ public sealed class ScreenHandler : IHandler
     private readonly ScreenDefinition _screen;
     private readonly IHandler _sectionHandler;
     private readonly IHandler _actionHandler;
+    private readonly IResponse _screenResponse;
     private bool _isFormCompleted;
 
     public string Title => _screen.Title;
@@ -16,9 +19,12 @@ public sealed class ScreenHandler : IHandler
 
     internal ScreenHandler(ScreenHandlerBuilder builder)
     {
+        var sectionHandler = new SectionHandler(this);
         _screen = builder.Screen;
-        _sectionHandler = new SectionHandler(this);
+
+        _sectionHandler = sectionHandler;
         _actionHandler = new ActionHandler(this);
+        _screenResponse = sectionHandler;
     }
 
     public static IHandlerBuilder<ScreenHandler> CreateBuilder(string formPath) => new ScreenHandlerBuilder(formPath);
@@ -34,20 +40,20 @@ public sealed class ScreenHandler : IHandler
         Console.WriteLine("Exit code 0.");
     }
 
-    // public TEntity GetAnswer<TEntity>()
-    // {
-    //     if (!_isFormCompleted)
-    //         throw new FormHandlerException("Form is not yet completed");
+    public TEntity GetAnswer<TEntity>()
+    {
+        if (!_isFormCompleted)
+            throw new ScreenHandlerException("Form is not yet completed");
 
-    //     var x = JsonConvert.SerializeObject("");
+        var response = JsonConvert.SerializeObject(_screenResponse.Data);
 
-    //     var answer = JsonConvert.DeserializeObject<TEntity>(x);
+        var answer = JsonConvert.DeserializeObject<TEntity>(response);
 
-    //     if (answer is null)
-    //         throw new FormHandlerException("Answer is not available.");
+        if (answer is null)
+            throw new ScreenHandlerException("Answer is not available.");
 
-    //     return answer;
-    // }
+        return answer;
+    }
 
     private void SetTitle()
     {
