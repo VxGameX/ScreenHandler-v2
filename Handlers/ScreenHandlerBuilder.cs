@@ -1,17 +1,23 @@
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using ScreenHandler.Exceptions;
-using ScreenHandler.Models;
-using ScreenHandler.Validators;
+using ConsoleScreenHandler.Exceptions;
+using ConsoleScreenHandler.Models;
+using ConsoleScreenHandler.Validators;
 
-namespace ScreenHandler.Handlers;
+namespace ConsoleScreenHandler.Handlers;
 
-internal sealed class ScreenHandlerBuilder : IHandlerBuilder<ScreenHandler>
+public sealed class ScreenHandlerBuilder : IHandlerBuilder<ScreenHandler>
 {
-    private readonly IScreenValidator _screenValidator = new ScreenValidator();
+    private readonly IScreenValidator _screenValidator;
+    private readonly ILogger<ScreenHandlerBuilder> _logger;
 
-    public ScreenDefinition Screen { get; set; }
+    public ScreenHandlerBuilder(ILogger<ScreenHandlerBuilder> logger, IScreenValidator screenValidator)
+    {
+        _logger = logger;
+        _screenValidator = screenValidator;
+    }
 
-    internal ScreenHandlerBuilder(string screenPath)
+    public ScreenHandler Build(string screenPath)
     {
         try
         {
@@ -23,7 +29,10 @@ internal sealed class ScreenHandlerBuilder : IHandlerBuilder<ScreenHandler>
                 var newScreen = JsonConvert.DeserializeObject<ScreenDefinition>(json)!;
 
                 _screenValidator.RegisterForm(newScreen);
-                Screen = newScreen;
+
+                var logger = CreateHandlerLogger();
+
+                return new(logger, newScreen);
             }
         }
         catch
@@ -32,5 +41,15 @@ internal sealed class ScreenHandlerBuilder : IHandlerBuilder<ScreenHandler>
         }
     }
 
-    public ScreenHandler Build() => new(this);
+    private ILogger<ScreenHandler> CreateHandlerLogger()
+    {
+        using var loggerFactory = LoggerFactory.Create(loggingBuilder =>
+        {
+            loggingBuilder.SetMinimumLevel(LogLevel.Trace)
+                    .AddConsole();
+        });
+
+        var logger = loggerFactory.CreateLogger<ScreenHandler>();
+        return logger;
+    }
 }

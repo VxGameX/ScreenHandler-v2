@@ -1,7 +1,7 @@
-namespace ScreenHandler.Handlers;
+namespace ConsoleScreenHandler.Handlers;
 
 public interface IHandlerBuilder<THandler>
     where THandler : class
 {
-    THandler Build();
+    THandler Build(string screenPath);
 }
