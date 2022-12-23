@@ -1,8 +1,8 @@
-namespace ScreenHandler.Exceptions;
+namespace ConsoleScreenHandler.Exceptions;
 
-public class ScreenHandlerException : Exception
+public class ConsoleScreenHandlerException : Exception
 {
-    public ScreenHandlerException(string message)
+    public ConsoleScreenHandlerException(string message)
         : base($"{message}{(message.LastOrDefault() == '.' ? string.Empty : ".")}{Environment.NewLine}{Environment.NewLine}Exit code: -1")
     {
     }

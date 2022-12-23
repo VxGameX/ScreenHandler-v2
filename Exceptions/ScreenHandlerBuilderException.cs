@@ -1,4 +1,4 @@
-namespace ScreenHandler.Exceptions;
+namespace ConsoleScreenHandler.Exceptions;
 
 public class ScreenHandlerBuilderException : Exception
 {

@@ -1,40 +1,33 @@
+using ConsoleScreenHandler.Exceptions;
+using ConsoleScreenHandler.Helpers;
+using ConsoleScreenHandler.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using ScreenHandler.Exceptions;
-using ScreenHandler.Helpers;
-using ScreenHandler.Models;
 
-namespace ScreenHandler.Handlers;
+namespace ConsoleScreenHandler.Handlers;
 
-public sealed class ScreenHandler : IHandler
+public sealed class ScreenHandler : IScreenHandler
 {
-    private readonly ScreenDefinition _screen;
-    private readonly IHandler _sectionHandler;
-    private readonly IHandler _actionHandler;
-    private readonly IResponse _screenResponse;
+    private readonly ILogger<ScreenHandler> _logger;
+    private readonly IHandlerHelpers _handlerHelpers;
+    public IActionHandler ActionHandler { get; set; } = null!;
+    public ISectionHandler SectionHandler { get; set; } = null!;
     private bool _isFormCompleted;
 
-    public string Title => _screen.Title;
-    public IEnumerable<Section> Sections => _screen.Sections;
-    public IEnumerable<Models.Action> Actions => _screen.Actions;
+    public Screen Screen { get; set; } = null!;
 
-    internal ScreenHandler(ScreenHandlerBuilder builder)
+    public ScreenHandler(ILogger<ScreenHandler> logger, IHandlerHelpers handlerHelpers)
     {
-        var sectionHandler = new SectionHandler(this);
-        _screen = builder.Screen;
-
-        _sectionHandler = sectionHandler;
-        _actionHandler = new ActionHandler(this);
-        _screenResponse = sectionHandler;
+        _logger = logger;
+        _handlerHelpers = handlerHelpers;
     }
 
-    public static IHandlerBuilder<ScreenHandler> CreateBuilder(string formPath) => new ScreenHandlerBuilder(formPath);
-
-    public void Run()
+    public void ShowScreen()
     {
         SetTitle();
 
-        _sectionHandler.Run();
-        _actionHandler.Run();
+        SectionHandler.ShowSections();
+        ActionHandler.ShowActions();
 
         _isFormCompleted = true;
         Console.WriteLine("Exit code 0.");
@@ -43,22 +36,21 @@ public sealed class ScreenHandler : IHandler
     public TEntity GetAnswer<TEntity>()
     {
         if (!_isFormCompleted)
-            throw new ScreenHandlerException("Form is not yet completed");
+            throw new ConsoleScreenHandlerException("Form is not yet completed");
 
-        var response = JsonConvert.SerializeObject(_screenResponse.Data);
-
+        var response = JsonConvert.SerializeObject(SectionHandler.Result.Data);
         var answer = JsonConvert.DeserializeObject<TEntity>(response);
 
         if (answer is null)
-            throw new ScreenHandlerException("Answer is not available.");
+            throw new ConsoleScreenHandlerException("Answer is not available.");
 
         return answer;
     }
 
     private void SetTitle()
     {
-        Console.Title = _screen.Title;
-        HandlerHelpers.ScreenTitle = _screen.Title;
+        Console.Title = Screen.Title;
+        _handlerHelpers.ScreenTitle = Screen.Title;
     }
 
     // private void CentralizeTitle()

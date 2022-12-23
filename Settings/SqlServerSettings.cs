@@ -1,4 +1,4 @@
-namespace ScreenHandler.Settings;
+namespace ConsoleScreenHandler.Settings;
 
 public class SqlServerSettings
 {

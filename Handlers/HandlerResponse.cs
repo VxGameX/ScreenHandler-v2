@@ -1,7 +1,12 @@
-namespace ScreenHandler.Handlers;
+namespace ConsoleScreenHandler.Handlers;
 
-public class HandlerResponse : IResponse
+public class HandlerResponse : IResult
 {
     public bool Success { get; set; }
-    public IDictionary<string, string> Data { get; set; } = new Dictionary<string, string>();
+    public IDictionary<string, string> Data { get; set; }
+
+    public HandlerResponse(IDictionary<string, string> data)
+    {
+        Data = data;
+    }
 }

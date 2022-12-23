@@ -1,25 +1,29 @@
-using ScreenHandler.Helpers;
-using ScreenHandler.Models;
+using ConsoleScreenHandler.Helpers;
+using ConsoleScreenHandler.Models;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
-namespace ScreenHandler.Handlers;
+namespace ConsoleScreenHandler.Handlers;
 
-public class SectionHandler : IHandler, IResponse
+public class SectionHandler : ISectionHandler
 {
+    private readonly ILogger<SectionHandler> _logger;
+    private readonly IHandlerHelpers _handlerHelpers;
     private Section _currentSection = null!;
-    private readonly IEnumerable<Section> _sections;
-    private readonly string _screenTitle;
+    public IResult Result { get; set; }
 
-    public IDictionary<string, string> Data { get; set; } = new Dictionary<string, string>();
+    public IEnumerable<Section> Sections { get; set; } = null!;
 
-    public SectionHandler(ScreenHandler handler)
+    public SectionHandler(ILogger<SectionHandler> logger, IHandlerHelpers handlerHelpers, IResult response)
     {
-        _sections = handler.Sections;
-        _screenTitle = handler.Title;
+        _logger = logger;
+        _handlerHelpers = handlerHelpers;
+        Result = response;
     }
 
-    public void Run()
+    public void ShowSections()
     {
-        foreach (var section in _sections)
+        foreach (var section in Sections)
         {
             SetCurrentSection(section);
             ShowSection();
@@ -32,7 +36,7 @@ public class SectionHandler : IHandler, IResponse
     {
         do
         {
-            HandlerHelpers.ClearScreen();
+            _handlerHelpers.ClearScreen();
             ShowLabel();
 
             Console.Write(">> ");
@@ -40,13 +44,13 @@ public class SectionHandler : IHandler, IResponse
 
             if (IsValidAnswer(answer))
             {
-                Data.Add(_currentSection.Id, answer);
+                Result.Data.Add(_currentSection.Id, answer);
                 break;
             }
 
-            HandlerHelpers.ClearScreen();
+            _handlerHelpers.ClearScreen();
             Console.Write("Cannot leave required (*) sections empty.");
-            HandlerHelpers.Pause();
+            _handlerHelpers.Pause();
         }
         while (true);
     }

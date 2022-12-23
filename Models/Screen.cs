@@ -1,6 +1,6 @@
-namespace ScreenHandler.Models;
+namespace ConsoleScreenHandler.Models;
 
-public class ScreenDefinition
+public class Screen
 {
     public string Id { get; set; } = null!;
     public string Type { get; set; } = null!;

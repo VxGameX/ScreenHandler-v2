@@ -1,4 +1,4 @@
-namespace ScreenHandler.Entities;
+namespace ConsoleScreenHandler.Entities;
 
 public interface IEntity
 {

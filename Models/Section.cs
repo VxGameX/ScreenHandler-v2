@@ -1,4 +1,4 @@
-namespace ScreenHandler.Models;
+namespace ConsoleScreenHandler.Models;
 
 public class Section
 {
