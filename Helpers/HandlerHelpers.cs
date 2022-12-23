@@ -1,17 +1,33 @@
-namespace ScreenHandler.Helpers;
+using Microsoft.Extensions.Logging;
 
-public static class HandlerHelpers
+namespace ConsoleScreenHandler.Helpers;
+
+public class HandlerHelpers : IHandlerHelpers
 {
-    public static string ScreenTitle { get; set; } = null!;
+    private readonly ILogger<HandlerHelpers> _logger;
 
-    public static void ClearScreen()
+    public string ScreenTitle { get; set; } = null!;
+
+    public HandlerHelpers(ILogger<HandlerHelpers> logger) => _logger = logger;
+
+    public void ClearScreen()
     {
         Console.ResetColor();
+        _logger.LogDebug("Console colors reseted.");
         Console.Clear();
+        _logger.LogDebug("Console screen cleared.");
         ShowTitle();
     }
 
-    private static void ShowTitle() => Console.WriteLine($"{ScreenTitle}{Environment.NewLine}");
+    private void ShowTitle()
+    {
+        Console.WriteLine($"{ScreenTitle}{Environment.NewLine}");
+        _logger.LogDebug("Title showed.");
+    }
 
-    public static void Pause() => Console.ReadKey(true);
+    public void Pause()
+    {
+        Console.ReadKey(true);
+        _logger.LogDebug("Screen paused.");
+    }
 }

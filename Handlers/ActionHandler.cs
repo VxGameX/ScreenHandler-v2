@@ -1,34 +1,42 @@
-using ScreenHandler.Configurators;
-using ScreenHandler.Helpers;
+using ConsoleScreenHandler.Configurators;
+using ConsoleScreenHandler.Helpers;
+using Microsoft.Extensions.Logging;
 
-namespace ScreenHandler.Handlers;
+namespace ConsoleScreenHandler.Handlers;
 
-public class ActionHandler : IHandler
+public class ActionHandler : IActionHandler
 {
-    private readonly IEnumerable<Models.Action> _actions;
+    private readonly ILogger<ActionHandler> _logger;
+    private readonly IHandlerHelpers _handlerHelper;
     private Models.Action _currentAction = null!;
 
-    public ActionHandler(ScreenHandler handler) => _actions = handler.Actions;
+    public IEnumerable<Models.Action> Actions { get; set; } = null!;
 
-    public void Run()
+    public ActionHandler(ILogger<ActionHandler> logger, IHandlerHelpers handlerHelper)
+    {
+        _logger = logger;
+        _handlerHelper = handlerHelper;
+    }
+
+    public void ShowActions()
     {
         do
         {
-            HandlerHelpers.ClearScreen();
-            foreach (var action in _actions)
+            _handlerHelper.ClearScreen();
+            foreach (var action in Actions)
             {
                 SetCurrentAction(action);
                 ShowActionName();
             }
 
             Console.Write(">> ");
-            var selectedAction = Console.ReadKey(true).KeyChar;
+            var selectedAction = Console.ReadLine() ?? string.Empty;
 
             if (!IsValidOption(selectedAction))
             {
-                HandlerHelpers.ClearScreen();
+                _handlerHelper.ClearScreen();
                 Console.Write("You must select an option.");
-                HandlerHelpers.Pause();
+                _handlerHelper.Pause();
                 continue;
             }
             RunAction(selectedAction);
@@ -36,15 +44,15 @@ public class ActionHandler : IHandler
         } while (true);
     }
 
-    private void RunAction(char button)
+    private void RunAction(string button)
     {
-        var selectedAction = _actions.FirstOrDefault(a => a.Button == button);
+        var selectedAction = Actions.FirstOrDefault(a => a.Button == button);
 
         if (selectedAction is null)
         {
-            HandlerHelpers.ClearScreen();
+            _handlerHelper.ClearScreen();
             Console.Write("You must select a valid action.");
-            HandlerHelpers.Pause();
+            _handlerHelper.Pause();
             return;
         }
 
@@ -66,5 +74,5 @@ public class ActionHandler : IHandler
 
     private void ShowActionName() => Console.WriteLine($"{_currentAction.Name} ({_currentAction.Button}){Environment.NewLine}");
 
-    private bool IsValidOption(char option) => !char.IsWhiteSpace(option);
+    private bool IsValidOption(string option) => !string.IsNullOrWhiteSpace(option);
 }

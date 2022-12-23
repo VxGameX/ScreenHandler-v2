@@ -1,7 +1,7 @@
 using System.Reflection;
-using ScreenHandler.Handlers;
+using ConsoleScreenHandler.Handlers;
 
-namespace ScreenHandler.Configurators;
+namespace ConsoleScreenHandler.Configurators;
 
 public static class AssemblyConfigurator
 {

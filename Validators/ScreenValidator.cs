@@ -1,30 +1,38 @@
-using ScreenHandler.Exceptions;
-using ScreenHandler.Models;
+using ConsoleScreenHandler.Exceptions;
+using ConsoleScreenHandler.Models;
+using Microsoft.Extensions.Logging;
 
-namespace ScreenHandler.Validators;
+namespace ConsoleScreenHandler.Validators;
 
-public class ScreenValidator : IScreenValidator
+public class ScreenValidator : IValidator<Screen>
 {
-    private static ICollection<ScreenDefinition> _registeredForms = new List<ScreenDefinition>();
+    private readonly ILogger<ScreenValidator> _logger;
+    private ICollection<Screen> _registeredScreens;
 
-    public void RegisterForm(ScreenDefinition form)
+    public ScreenValidator(ILogger<ScreenValidator> logger, ICollection<Screen> registeredScreens)
     {
-        if (IsFormRegistered(form.Id))
-            throw new ScreenStructException($"Form ID {form.Id} is already registered.");
-
-        RunValidations(form);
-        _registeredForms.Add(form);
+        _logger = logger;
+        _registeredScreens = registeredScreens;
     }
 
-    private void RunValidations(ScreenDefinition form)
+    public void Register(Screen screen)
     {
+        RunValidations(screen);
+        _registeredScreens.Add(screen);
+    }
+
+    private void RunValidations(Screen form)
+    {
+        if (IsScreenRegistered(form.Id))
+            throw new ScreenStructException($"Form ID {form.Id} is already registered.");
+
         if (string.IsNullOrWhiteSpace(form.Id))
             throw new ScreenStructException("Config file 'id' is empty. You must specify a form id.");
 
         if (string.IsNullOrWhiteSpace(form.Title))
             throw new ScreenStructException("Config file 'title' is empty. You must assing a title to a form");
 
-        if (form.Sections is null || !form.Sections.Any())
+        if (!form.Sections.Any())
             throw new SectionValidationException("Config file 'sections' is empty. You must add at least 1 section to a form.");
 
         // Section validations
@@ -38,12 +46,9 @@ public class ScreenValidator : IScreenValidator
         }
     }
 
-    private bool IsFormRegistered(string formId)
+    private bool IsScreenRegistered(string screenId)
     {
-        var form = _registeredForms.FirstOrDefault(c => c.Id == formId);
-
-        if (form is null)
-            return false;
-        return false;
+        var form = _registeredScreens.FirstOrDefault(c => c.Id == screenId);
+        return form is not null;
     }
 }
