@@ -6,9 +6,9 @@ namespace ConsoleScreenHandler.Handlers;
 public class SectionHandlerFactory : ISectionHandlerFactory
 {
     private readonly ILogger<SectionHandlerFactory> _logger;
-    private readonly Func<SectionHandler> _factory;
+    private readonly Func<ISectionHandler> _factory;
 
-    public SectionHandlerFactory(ILogger<SectionHandlerFactory> logger, Func<SectionHandler> factory)
+    public SectionHandlerFactory(ILogger<SectionHandlerFactory> logger, Func<ISectionHandler> factory)
     {
         _logger = logger;
         _factory = factory;

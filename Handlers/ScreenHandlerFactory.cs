@@ -26,24 +26,25 @@ public sealed class ScreenHandlerFactory : IScreenHandlerFactory
 
     public IScreenHandler Create(string screenPath)
     {
-        try
-        {
-            var newScreenHandler = _screenHandlerFactory();
-            using var file = new StreamReader(screenPath);
-            var json = file.ReadToEnd()
-                .Trim();
+        var newScreenHandler = _screenHandlerFactory();
+        using var file = new StreamReader(screenPath);
+        var json = file.ReadToEnd()
+            .Trim();
 
-            var newScreen = JsonConvert.DeserializeObject<Screen>(json)!;
+        var newScreen = JsonConvert.DeserializeObject<Screen>(json)!;
 
-            _screenValidator.Register(newScreen);
-            newScreenHandler.Screen = newScreen;
-            newScreenHandler.ActionHandler = _actionHandlerFactory.Create(newScreen.Actions);
-            newScreenHandler.SectionHandler = _sectionHandlerFactory.Create(newScreen.Sections);
-            return newScreenHandler;
-        }
-        catch
-        {
-            throw new ScreenHandlerBuilderException($"Could not find any screen file on path {screenPath}");
-        }
+        _screenValidator.Register(newScreen);
+        newScreenHandler.Screen = newScreen;
+        newScreenHandler.ActionHandler = _actionHandlerFactory.Create(newScreen.Actions);
+        newScreenHandler.SectionHandler = _sectionHandlerFactory.Create(newScreen.Sections);
+        return newScreenHandler;
+        // try
+        // {
+        // }
+        // catch (Exception ex)
+        // {
+        //     _logger.LogError("There was an error trying to create a screen handler.", ex);
+        //     throw new ScreenHandlerBuilderException($"Could not find any screen file on path {screenPath}");
+        // }
     }
 }

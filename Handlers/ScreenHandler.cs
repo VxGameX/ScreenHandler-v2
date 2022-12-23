@@ -12,16 +12,14 @@ public sealed class ScreenHandler : IScreenHandler
     private readonly IHandlerHelpers _handlerHelpers;
     public IActionHandler ActionHandler { get; set; } = null!;
     public ISectionHandler SectionHandler { get; set; } = null!;
-    private readonly IResponse _screenResponse;
     private bool _isFormCompleted;
 
     public Screen Screen { get; set; } = null!;
 
-    internal ScreenHandler(ILogger<ScreenHandler> logger, IHandlerHelpers handlerHelpers, IResponse screenResponse)
+    public ScreenHandler(ILogger<ScreenHandler> logger, IHandlerHelpers handlerHelpers)
     {
         _logger = logger;
         _handlerHelpers = handlerHelpers;
-        _screenResponse = screenResponse;
     }
 
     public void ShowScreen()
@@ -40,8 +38,7 @@ public sealed class ScreenHandler : IScreenHandler
         if (!_isFormCompleted)
             throw new ConsoleScreenHandlerException("Form is not yet completed");
 
-        var response = JsonConvert.SerializeObject(_screenResponse.Data);
-
+        var response = JsonConvert.SerializeObject(SectionHandler.Result.Data);
         var answer = JsonConvert.DeserializeObject<TEntity>(response);
 
         if (answer is null)

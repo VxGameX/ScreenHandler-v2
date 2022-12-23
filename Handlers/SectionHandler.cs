@@ -10,15 +10,15 @@ public class SectionHandler : ISectionHandler
     private readonly ILogger<SectionHandler> _logger;
     private readonly IHandlerHelpers _handlerHelpers;
     private Section _currentSection = null!;
-    private IResponse _response;
+    public IResult Result { get; set; }
 
     public IEnumerable<Section> Sections { get; set; } = null!;
 
-    public SectionHandler(ILogger<SectionHandler> logger, IHandlerHelpers handlerHelpers, IResponse response)
+    public SectionHandler(ILogger<SectionHandler> logger, IHandlerHelpers handlerHelpers, IResult response)
     {
         _logger = logger;
         _handlerHelpers = handlerHelpers;
-        _response = response;
+        Result = response;
     }
 
     public void ShowSections()
@@ -44,7 +44,7 @@ public class SectionHandler : ISectionHandler
 
             if (IsValidAnswer(answer))
             {
-                _response.Data.Add(_currentSection.Id, answer);
+                Result.Data.Add(_currentSection.Id, answer);
                 break;
             }
 

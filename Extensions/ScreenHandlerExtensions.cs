@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using ConsoleScreenHandler.Handlers;
 using ConsoleScreenHandler.Helpers;
 using ConsoleScreenHandler.Models;
@@ -11,7 +12,7 @@ public static class ConsoleScreenHandlerExtensions
     public static void AddConsoleScreenHandler(this IServiceCollection services)
     {
         services.AddHandlerResponse();
-        services.AddSingleton<ICollection<Screen>, List<Screen>>();
+        services.AddSingleton<ICollection<Screen>, Collection<Screen>>();
 
         services.AddHelpers();
         services.AddValidators();
@@ -27,8 +28,11 @@ public static class ConsoleScreenHandlerExtensions
 
     private static void AddHandlerResponse(this IServiceCollection services)
     {
-        services.AddTransient<IDictionary<string, string>, Dictionary<string, string>>();
-        services.AddTransient<IResponse, HandlerResponse>();
+        services.AddTransient<IDictionary<string, string>>(sp =>
+        {
+            return new Dictionary<string, string>();
+        });
+        services.AddTransient<IResult, HandlerResponse>();
     }
 
     private static void AddScreenHandlerFactory(this IServiceCollection services)
@@ -42,7 +46,7 @@ public static class ConsoleScreenHandlerExtensions
     {
         services.AddTransient<IActionHandler, ActionHandler>();
         services.AddSingleton<Func<IActionHandler>>(x => () => x.GetService<IActionHandler>()!);
-        services.AddSingleton<IActionHandlerFactory, IActionHandlerFactory>();
+        services.AddSingleton<IActionHandlerFactory, ActionHandlerFactory>();
     }
 
     private static void AddSectionHandlerFactory(this IServiceCollection services)
