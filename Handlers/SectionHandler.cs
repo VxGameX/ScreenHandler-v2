@@ -60,15 +60,46 @@ public class SectionHandler : ISectionHandler
 
     private void ShowLabel()
     {
+        if (!_currentSection.Required)
+        {
+            Console.WriteLine($"{_currentSection.Label}{Environment.NewLine}");
+            return;
+        }
+
         var options = _options.Value;
         switch (options.RequiredMark)
         {
+            case RequiredMark.ColorStar:
+                Console.Write(_currentSection.Label);
+
+                Console.ForegroundColor = options.RequiredMarkColor;
+                Console.WriteLine($" *{Environment.NewLine}");
+                Console.ForegroundColor = options.ForegroundColor;
+                return;
+            case RequiredMark.Highlight:
+                Console.BackgroundColor = options.RequiredMarkColor;
+                Console.WriteLine($"{_currentSection.Label}{Environment.NewLine}");
+                Console.BackgroundColor = options.BackgroundColor;
+                return;
+            case RequiredMark.HighlightAndStar:
+                Console.BackgroundColor = options.RequiredMarkColor;
+                Console.WriteLine($"{_currentSection.Label} *{Environment.NewLine}");
+                Console.BackgroundColor = options.BackgroundColor;
+                return;
+            case RequiredMark.HighlightAndUpperCase:
+                Console.BackgroundColor = options.RequiredMarkColor;
+                Console.WriteLine($"{_currentSection.Label.ToUpper()}{Environment.NewLine}");
+                Console.BackgroundColor = options.BackgroundColor;
+                return;
             case RequiredMark.UpperCase:
-                Console.WriteLine($"{(_currentSection.Required ? _currentSection.Label.ToUpper() : _currentSection.Label)}{Environment.NewLine}");
-                break;
+                Console.WriteLine($"{_currentSection.Label.ToUpper()}{Environment.NewLine}");
+                return;
             case RequiredMark.Star:
-                Console.WriteLine($"{(_currentSection.Required ? $"{_currentSection.Label} *" : _currentSection.Label)}{Environment.NewLine}");
-                break;
+                Console.WriteLine($"{_currentSection.Label} *{Environment.NewLine}");
+                return;
+            case RequiredMark.StarAndUpperCase:
+                Console.WriteLine($"{_currentSection.Label.ToUpper()} *{Environment.NewLine}");
+                return;
         };
     }
 
