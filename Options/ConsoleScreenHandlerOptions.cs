@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace ConsoleScreenHandler.Options;
 
-public class ConsoleScreenHandlerOptions
+public class ConsoleScreenHandlerOptions : IConsoleScreenHandlerOptions
 {
     public Assembly ExecutingAssembly { get; set; } = null!;
     public ConsoleColor ForegroundColor { get; set; } = Console.ForegroundColor;

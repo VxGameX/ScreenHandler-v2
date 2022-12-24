@@ -15,6 +15,7 @@ public static class ConsoleScreenHandlerExtensions
         services.Configure(options);
 
         services.AddHandlerResponse();
+        services.AddConsoleScreenHandlerOptions();
         services.AddSingleton<ICollection<Screen>, Collection<Screen>>();
 
         services.AddHelpers();
@@ -26,6 +27,8 @@ public static class ConsoleScreenHandlerExtensions
     }
 
     private static void AddHelpers(this IServiceCollection services) => services.AddSingleton<IHandlerHelpers, HandlerHelpers>();
+
+    private static void AddConsoleScreenHandlerOptions(this IServiceCollection services) => services.AddSingleton<IConsoleScreenHandlerOptions, ConsoleScreenHandlerOptions>();
 
     private static void AddValidators(this IServiceCollection services) => services.AddSingleton<IValidator<Screen>, ScreenValidator>();
 
