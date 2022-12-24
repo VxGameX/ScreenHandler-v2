@@ -19,8 +19,8 @@ public class HandlerHelpers : IHandlerHelpers
 
     public void ClearScreen()
     {
-        Console.ResetColor();
         _logger.LogDebug("Console colors reseted.");
+        SetScreenColors();
         Console.Clear();
         _logger.LogDebug("Console screen cleared.");
         ShowTitle();
@@ -41,5 +41,12 @@ public class HandlerHelpers : IHandlerHelpers
     {
         Console.ReadKey(true);
         _logger.LogDebug("Screen paused.");
+    }
+
+    private void SetScreenColors()
+    {
+        var options = _options.Value;
+        Console.BackgroundColor = options.BackgroundColor;
+        Console.ForegroundColor = options.ForegroundColor;
     }
 }

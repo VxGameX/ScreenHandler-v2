@@ -12,23 +12,20 @@ public sealed class ScreenHandler : IScreenHandler
 {
     private readonly ILogger<ScreenHandler> _logger;
     private readonly IHandlerHelpers _handlerHelpers;
-    private readonly IOptions<ConsoleScreenHandlerOptions> _options;
     private bool _isFormCompleted;
 
     public IActionHandler ActionHandler { get; set; } = null!;
     public ISectionHandler SectionHandler { get; set; } = null!;
     public Screen Screen { get; set; } = null!;
 
-    public ScreenHandler(ILogger<ScreenHandler> logger, IHandlerHelpers handlerHelpers, IOptions<ConsoleScreenHandlerOptions> options)
+    public ScreenHandler(ILogger<ScreenHandler> logger, IHandlerHelpers handlerHelpers)
     {
         _logger = logger;
         _handlerHelpers = handlerHelpers;
-        _options = options;
     }
 
     public void ShowScreen()
     {
-        SetScreenColors();
         SetTitle();
 
         SectionHandler.ShowSections();
@@ -36,13 +33,6 @@ public sealed class ScreenHandler : IScreenHandler
 
         _isFormCompleted = true;
         Console.WriteLine("Exit code 0.");
-    }
-
-    private void SetScreenColors()
-    {
-        var options = _options.Value;
-        Console.BackgroundColor = options.BackgroundColor;
-        Console.ForegroundColor = options.ForegroundColor;
     }
 
     public TEntity GetAnswer<TEntity>()
