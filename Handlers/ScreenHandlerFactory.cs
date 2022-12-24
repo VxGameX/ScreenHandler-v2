@@ -1,4 +1,3 @@
-using ConsoleScreenHandler.Exceptions;
 using ConsoleScreenHandler.Models;
 using ConsoleScreenHandler.Validators;
 using Microsoft.Extensions.Logging;
@@ -38,13 +37,5 @@ public sealed class ScreenHandlerFactory : IScreenHandlerFactory
         newScreenHandler.ActionHandler = _actionHandlerFactory.Create(newScreen.Actions);
         newScreenHandler.SectionHandler = _sectionHandlerFactory.Create(newScreen.Sections);
         return newScreenHandler;
-        // try
-        // {
-        // }
-        // catch (Exception ex)
-        // {
-        //     _logger.LogError("There was an error trying to create a screen handler.", ex);
-        //     throw new ScreenHandlerBuilderException($"Could not find any screen file on path {screenPath}");
-        // }
     }
 }

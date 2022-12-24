@@ -1,7 +1,6 @@
 using ConsoleScreenHandler.Helpers;
 using ConsoleScreenHandler.Models;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace ConsoleScreenHandler.Handlers;
 

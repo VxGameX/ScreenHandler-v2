@@ -1,6 +1,7 @@
-using ConsoleScreenHandler.Configurators;
 using ConsoleScreenHandler.Helpers;
+using ConsoleScreenHandler.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ConsoleScreenHandler.Handlers;
 
@@ -8,14 +9,16 @@ public class ActionHandler : IActionHandler
 {
     private readonly ILogger<ActionHandler> _logger;
     private readonly IHandlerHelpers _handlerHelper;
+    private readonly IOptions<ConsoleScreenHandlerOptions> _options;
     private Models.Action _currentAction = null!;
 
     public IEnumerable<Models.Action> Actions { get; set; } = null!;
 
-    public ActionHandler(ILogger<ActionHandler> logger, IHandlerHelpers handlerHelper)
+    public ActionHandler(ILogger<ActionHandler> logger, IHandlerHelpers handlerHelper, IOptions<ConsoleScreenHandlerOptions> options)
     {
         _logger = logger;
         _handlerHelper = handlerHelper;
+        _options = options;
     }
 
     public void ShowActions()
@@ -46,6 +49,7 @@ public class ActionHandler : IActionHandler
 
     private void RunAction(string button)
     {
+        var options = _options.Value;
         var selectedAction = Actions.FirstOrDefault(a => a.Button == button);
 
         if (selectedAction is null)
@@ -56,7 +60,7 @@ public class ActionHandler : IActionHandler
             return;
         }
 
-        var type = AssemblyConfigurator.ExecutingAssembly.GetType(selectedAction.Handler);
+        var type = options.ExecutingAssembly.GetType(selectedAction.Handler);
 
         if (type is null)
             throw new Exception($"Could not find handler '{selectedAction.Handler}'.");

@@ -1,16 +1,19 @@
-using System.Collections.ObjectModel;
 using ConsoleScreenHandler.Handlers;
 using ConsoleScreenHandler.Helpers;
 using ConsoleScreenHandler.Models;
+using ConsoleScreenHandler.Options;
 using ConsoleScreenHandler.Validators;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.ObjectModel;
 
 namespace ConsoleScreenHandler.Extensions;
 
 public static class ConsoleScreenHandlerExtensions
 {
-    public static void AddConsoleScreenHandler(this IServiceCollection services)
+    public static void AddConsoleScreenHandler(this IServiceCollection services, Action<ConsoleScreenHandlerOptions> options)
     {
+        services.Configure(options);
+
         services.AddHandlerResponse();
         services.AddSingleton<ICollection<Screen>, Collection<Screen>>();
 
