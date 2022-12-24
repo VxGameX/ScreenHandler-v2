@@ -8,4 +8,5 @@ public class ConsoleScreenHandlerOptions : IConsoleScreenHandlerOptions
     public ConsoleColor ForegroundColor { get; set; } = Console.ForegroundColor;
     public ConsoleColor BackgroundColor { get; set; } = Console.BackgroundColor;
     public bool TitleCentralized { get; set; } = false;
+    public RequiredMark RequiredMark { get; set; } = RequiredMark.Star;
 }

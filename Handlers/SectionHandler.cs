@@ -1,6 +1,8 @@
 using ConsoleScreenHandler.Helpers;
 using ConsoleScreenHandler.Models;
+using ConsoleScreenHandler.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ConsoleScreenHandler.Handlers;
 
@@ -8,16 +10,18 @@ public class SectionHandler : ISectionHandler
 {
     private readonly ILogger<SectionHandler> _logger;
     private readonly IHandlerHelpers _handlerHelpers;
+    private readonly IOptions<ConsoleScreenHandlerOptions> _options;
     private Section _currentSection = null!;
     public IResult Result { get; set; }
 
     public IEnumerable<Section> Sections { get; set; } = null!;
 
-    public SectionHandler(ILogger<SectionHandler> logger, IHandlerHelpers handlerHelpers, IResult response)
+    public SectionHandler(ILogger<SectionHandler> logger, IHandlerHelpers handlerHelpers, IResult response, IOptions<ConsoleScreenHandlerOptions> options)
     {
         _logger = logger;
         _handlerHelpers = handlerHelpers;
         Result = response;
+        _options = options;
     }
 
     public void ShowSections()
@@ -54,7 +58,19 @@ public class SectionHandler : ISectionHandler
         while (true);
     }
 
-    private void ShowLabel() => Console.WriteLine($"{_currentSection.Label} {(_currentSection.Required ? "*" : string.Empty)}{Environment.NewLine}");
+    private void ShowLabel()
+    {
+        var options = _options.Value;
+        switch (options.RequiredMark)
+        {
+            case RequiredMark.UpperCase:
+                Console.WriteLine($"{(_currentSection.Required ? _currentSection.Label.ToUpper() : _currentSection.Label)}{Environment.NewLine}");
+                break;
+            case RequiredMark.Star:
+                Console.WriteLine($"{(_currentSection.Required ? $"{_currentSection.Label} *" : _currentSection.Label)}{Environment.NewLine}");
+                break;
+        };
+    }
 
     private bool IsValidAnswer(string answer) => !(_currentSection.Required && string.IsNullOrWhiteSpace(answer));
 }

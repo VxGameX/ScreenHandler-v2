@@ -8,4 +8,5 @@ public interface IConsoleScreenHandlerOptions
     ConsoleColor ForegroundColor { get; set; }
     ConsoleColor BackgroundColor { get; set; }
     bool TitleCentralized { get; set; }
+    RequiredMark RequiredMark { get; set; }
 }
