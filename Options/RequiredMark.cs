@@ -4,8 +4,8 @@ public enum RequiredMark
 {
     ColorStar,
     Highlight,
-    HighlightAndStar,
     HighlightAndUpperCase,
+    None,
     Star,
     StarAndUpperCase,
     UpperCase

@@ -71,7 +71,6 @@ public class SectionHandler : ISectionHandler
         {
             case RequiredMark.ColorStar:
                 Console.Write(_currentSection.Label);
-
                 Console.ForegroundColor = options.RequiredMarkColor;
                 Console.WriteLine($" *{Environment.NewLine}");
                 Console.ForegroundColor = options.ForegroundColor;
@@ -81,15 +80,13 @@ public class SectionHandler : ISectionHandler
                 Console.WriteLine($"{_currentSection.Label}{Environment.NewLine}");
                 Console.BackgroundColor = options.BackgroundColor;
                 return;
-            case RequiredMark.HighlightAndStar:
-                Console.BackgroundColor = options.RequiredMarkColor;
-                Console.WriteLine($"{_currentSection.Label} *{Environment.NewLine}");
-                Console.BackgroundColor = options.BackgroundColor;
-                return;
             case RequiredMark.HighlightAndUpperCase:
                 Console.BackgroundColor = options.RequiredMarkColor;
                 Console.WriteLine($"{_currentSection.Label.ToUpper()}{Environment.NewLine}");
                 Console.BackgroundColor = options.BackgroundColor;
+                return;
+            case RequiredMark.None:
+                Console.WriteLine($"{_currentSection.Label}{Environment.NewLine}");
                 return;
             case RequiredMark.UpperCase:
                 Console.WriteLine($"{_currentSection.Label.ToUpper()}{Environment.NewLine}");
