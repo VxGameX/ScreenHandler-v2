@@ -75,6 +75,12 @@ public class SectionHandler : ISectionHandler
                 Console.WriteLine($" *{Environment.NewLine}");
                 Console.ForegroundColor = options.ForegroundColor;
                 return;
+            case RequiredMark.ColorStarAndUpperCase:
+                Console.Write(_currentSection.Label.ToUpper());
+                Console.ForegroundColor = options.RequiredMarkColor;
+                Console.WriteLine($" *{Environment.NewLine}");
+                Console.ForegroundColor = options.ForegroundColor;
+                return;
             case RequiredMark.Highlight:
                 Console.BackgroundColor = options.RequiredMarkColor;
                 Console.WriteLine($"{_currentSection.Label}{Environment.NewLine}");
