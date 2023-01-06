@@ -10,7 +10,7 @@ namespace ConsoleScreenHandler.Extensions;
 
 public static class ConsoleScreenHandlerExtensions
 {
-    public static void AddConsoleScreenHandler(this IServiceCollection services, Action<ConsoleScreenHandlerOptions> options)
+    public static void AddCustomConsoleScreenHandler(this IServiceCollection services, Action<ConsoleScreenHandlerOptions> options)
     {
         services.Configure(options);
 
@@ -23,7 +23,21 @@ public static class ConsoleScreenHandlerExtensions
 
         services.AddScreenHandlerFactory();
         services.AddActionHandlerFactory();
-        services.AddSectionHandlerFactory();
+    }
+
+    public static void AddDefaultConsoleScreenHandler(this IServiceCollection services, Action<ConsoleScreenHandlerOptions> options)
+    {
+        services.Configure(options);
+
+        services.AddHandlerResponse();
+        services.AddConsoleScreenHandlerOptions();
+        services.AddSingleton<ICollection<Screen>, Collection<Screen>>();
+
+        services.AddHelpers();
+        services.AddValidators();
+
+        services.AddScreenHandlerFactory();
+        services.AddActionHandlerFactory();
     }
 
     private static void AddHelpers(this IServiceCollection services) => services.AddSingleton<IHandlerHelpers, HandlerHelpers>();
@@ -53,12 +67,5 @@ public static class ConsoleScreenHandlerExtensions
         services.AddTransient<IActionHandler, ActionHandler>();
         services.AddSingleton<Func<IActionHandler>>(x => () => x.GetService<IActionHandler>()!);
         services.AddSingleton<IActionHandlerFactory, ActionHandlerFactory>();
-    }
-
-    private static void AddSectionHandlerFactory(this IServiceCollection services)
-    {
-        services.AddTransient<ISectionHandler, SectionHandler>();
-        services.AddSingleton<Func<ISectionHandler>>(x => () => x.GetService<ISectionHandler>()!);
-        services.AddSingleton<ISectionHandlerFactory, SectionHandlerFactory>();
     }
 }

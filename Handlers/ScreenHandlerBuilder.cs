@@ -30,6 +30,9 @@ public sealed class ScreenHandlerBuilder : IScreenHandlerBuilder
     {
         var newScreenHandler = _screenHandlerFactory();
         newScreenHandler.Screen = _screen;
+        newScreenHandler.AnswerValidation = _answerValidation;
+        newScreenHandler.LabelOutput = _labelOutput;
+        newScreenHandler.NotValidAnswerResponse = _notValidAnswerResponse;
         newScreenHandler.ActionHandler = _actionHandlerFactory.Create(_screen.Actions);
         return newScreenHandler;
     }

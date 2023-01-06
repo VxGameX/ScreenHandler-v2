@@ -106,7 +106,7 @@ public sealed class ScreenHandler : IScreenHandler
         do
         {
             _handlerHelpers.ClearScreen();
-            Console.Write(LabelOutput(_currentSection));
+            Console.Write(_labelOutput(_currentSection));
 
             var answer = Console.ReadLine() ?? string.Empty;
 
