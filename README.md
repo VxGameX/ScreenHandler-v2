@@ -104,14 +104,14 @@
         ...
     }
     ```
-    
+
 * Input:
     > Required: Yes
     > Type: Input
-    > Here you 
+    > Here you
     > Required fields:
         * Type (string) - Values: int, float, text, radiobutton and checkbox
-    
+
     > Contextual fields:
         * Options (string array) Only required when type is checkbox or radiobutton
 
