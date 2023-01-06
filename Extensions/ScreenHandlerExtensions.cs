@@ -10,22 +10,7 @@ namespace ConsoleScreenHandler.Extensions;
 
 public static class ConsoleScreenHandlerExtensions
 {
-    public static void AddCustomConsoleScreenHandler(this IServiceCollection services, Action<ConsoleScreenHandlerOptions> options)
-    {
-        services.Configure(options);
-
-        services.AddHandlerResponse();
-        services.AddConsoleScreenHandlerOptions();
-        services.AddSingleton<ICollection<Screen>, Collection<Screen>>();
-
-        services.AddHelpers();
-        services.AddValidators();
-
-        services.AddScreenHandlerFactory();
-        services.AddActionHandlerFactory();
-    }
-
-    public static void AddDefaultConsoleScreenHandler(this IServiceCollection services, Action<ConsoleScreenHandlerOptions> options)
+    public static void AddConsoleScreenHandler(this IServiceCollection services, Action<ConsoleScreenHandlerOptions> options)
     {
         services.Configure(options);
 
