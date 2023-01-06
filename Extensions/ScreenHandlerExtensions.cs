@@ -45,7 +45,7 @@ public static class ConsoleScreenHandlerExtensions
     {
         services.AddTransient<IScreenHandler, ScreenHandler>();
         services.AddSingleton<Func<IScreenHandler>>(x => () => x.GetService<IScreenHandler>()!);
-        services.AddSingleton<IScreenHandlerFactory, ScreenHandlerFactory>();
+        services.AddSingleton<IScreenHandlerBuilder, ScreenHandlerBuilder>();
     }
 
     private static void AddActionHandlerFactory(this IServiceCollection services)

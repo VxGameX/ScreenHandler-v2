@@ -10,18 +10,23 @@ public class SectionHandler : ISectionHandler
 {
     private readonly ILogger<SectionHandler> _logger;
     private readonly IHandlerHelpers _handlerHelpers;
-    private readonly IOptions<ConsoleScreenHandlerOptions> _options;
     private Section _currentSection = null!;
     public IResult Result { get; set; }
 
+    private Func<Section, string> _requiredMarkFunc;
+    public Func<Section, string> PromtHandler
+    {
+        get { return _requiredMarkFunc; }
+        set { _requiredMarkFunc = value; }
+    }
+
     public IEnumerable<Section> Sections { get; set; } = null!;
 
-    public SectionHandler(ILogger<SectionHandler> logger, IHandlerHelpers handlerHelpers, IResult response, IOptions<ConsoleScreenHandlerOptions> options)
+    public SectionHandler(ILogger<SectionHandler> logger, IHandlerHelpers handlerHelpers, IResult response)
     {
         _logger = logger;
         _handlerHelpers = handlerHelpers;
         Result = response;
-        _options = options;
     }
 
     public void ShowSections()
@@ -60,16 +65,7 @@ public class SectionHandler : ISectionHandler
 
     private void ShowLabel()
     {
-        var options = _options.Value;
-        switch (options.RequiredMark)
-        {
-            case RequiredMark.UpperCase:
-                Console.WriteLine($"{(_currentSection.Required ? _currentSection.Label.ToUpper() : _currentSection.Label)}{Environment.NewLine}");
-                break;
-            case RequiredMark.Star:
-                Console.WriteLine($"{(_currentSection.Required ? $"{_currentSection.Label} *" : _currentSection.Label)}{Environment.NewLine}");
-                break;
-        };
+        Console.WriteLine(_requiredMarkFunc(this._currentSection));
     }
 
     private bool IsValidAnswer(string answer) => !(_currentSection.Required && string.IsNullOrWhiteSpace(answer));

@@ -4,10 +4,10 @@ namespace ConsoleScreenHandler.Handlers;
 
 public sealed class ActionHandlerFactory : IActionHandlerFactory
 {
-    private readonly ILogger<ScreenHandlerFactory> _logger;
+    private readonly ILogger<ScreenHandlerBuilder> _logger;
     private readonly Func<IActionHandler> _factory;
 
-    public ActionHandlerFactory(ILogger<ScreenHandlerFactory> logger, Func<IActionHandler> factory)
+    public ActionHandlerFactory(ILogger<ScreenHandlerBuilder> logger, Func<IActionHandler> factory)
     {
         _logger = logger;
         _factory = factory;

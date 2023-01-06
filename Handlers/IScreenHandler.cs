@@ -4,10 +4,15 @@ namespace ConsoleScreenHandler.Handlers;
 
 public interface IScreenHandler
 {
-    Screen Screen { get; set; }
+    IResult Result { get; set; }
     IActionHandler ActionHandler { get; set; }
-    ISectionHandler SectionHandler { get; set; }
+    Action<IEnumerable<Section>> SectionHandler { get; set; }
+    Func<Section, string> LabelOutput { get; set; }
+    Func<Section, string, bool> AnswerValidation { get; set; }
+    Func<Section, string, string> NotValidAnswerResponse { get; set; }
+    Screen Screen { get; set; }
 
-    void ShowScreen();
     TEntity GetAnswer<TEntity>();
+    void ShowScreen();
+    void ShowSections();
 }
