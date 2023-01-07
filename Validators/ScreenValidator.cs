@@ -17,26 +17,25 @@ public class ScreenValidator : IValidator<Screen>
 
     public void Register(Screen screen)
     {
-        RunValidations(screen);
+        if (IsScreenRegistered(screen.Id))
+            throw new ScreenStructException($"Form ID {screen.Id} is already registered.");
+
         _registeredScreens.Add(screen);
     }
 
-    private void RunValidations(Screen form)
+    public void RunValidations(Screen screen)
     {
-        if (IsScreenRegistered(form.Id))
-            throw new ScreenStructException($"Form ID {form.Id} is already registered.");
-
-        if (string.IsNullOrWhiteSpace(form.Id))
+        if (string.IsNullOrWhiteSpace(screen.Id))
             throw new ScreenStructException("Config file 'id' is empty. You must specify a form id.");
 
-        if (string.IsNullOrWhiteSpace(form.Title))
+        if (string.IsNullOrWhiteSpace(screen.Title))
             throw new ScreenStructException("Config file 'title' is empty. You must assing a title to a form");
 
-        if (!form.Sections.Any())
+        if (!screen.Sections.Any())
             throw new SectionValidationException("Config file 'sections' is empty. You must add at least 1 section to a form.");
 
         // Section validations
-        foreach (var section in form.Sections)
+        foreach (var section in screen.Sections)
         {
             if (string.IsNullOrWhiteSpace(section.Label))
                 throw new SectionValidationException("Config file -> 'sections' -> 'label' is empty. You must add at least 1 section to a form.");

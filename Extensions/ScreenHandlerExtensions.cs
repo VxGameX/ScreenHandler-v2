@@ -4,7 +4,6 @@ using ConsoleScreenHandler.Models;
 using ConsoleScreenHandler.Options;
 using ConsoleScreenHandler.Validators;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.ObjectModel;
 
 namespace ConsoleScreenHandler.Extensions;
 
@@ -16,7 +15,6 @@ public static class ConsoleScreenHandlerExtensions
 
         services.AddHandlerResponse();
         services.AddConsoleScreenHandlerOptions();
-        services.AddSingleton<ICollection<Screen>, Collection<Screen>>();
 
         services.AddHelpers();
         services.AddValidators();
