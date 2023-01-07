@@ -37,6 +37,8 @@ public sealed class ScreenHandler : IScreenHandler
         NotValidAnswerResponse = DefaultNotValidAnswerResponse();
         ScreenPause = DefaultScreenPause();
         TitleDisplay = DefaultTitleDisplay();
+
+        ConfigureHelpers();
     }
 
     public void ShowScreen()
