@@ -1,8 +1,6 @@
 using ConsoleScreenHandler.Handlers;
 using ConsoleScreenHandler.Helpers;
-using ConsoleScreenHandler.Models;
 using ConsoleScreenHandler.Options;
-using ConsoleScreenHandler.Validators;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ConsoleScreenHandler.Extensions;
@@ -17,7 +15,6 @@ public static class ConsoleScreenHandlerExtensions
         services.AddTransient<IResult, HandlerResponse>();
 
         services.AddSingleton<IHandlerHelpers, HandlerHelpers>();
-        services.AddSingleton<IValidator<Screen>, ScreenValidator>();
 
         services.AddIActionHandlerFactory();
         services.AddScreenHandlerFactory();

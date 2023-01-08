@@ -1,6 +1,5 @@
-using ConsoleScreenHandler.Helpers;
+using ConsoleScreenHandler.Exceptions;
 using ConsoleScreenHandler.Models;
-using ConsoleScreenHandler.Validators;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -9,7 +8,6 @@ namespace ConsoleScreenHandler.Handlers;
 public sealed class ScreenHandlerBuilder : IScreenHandlerBuilder
 {
     private readonly ILogger<ScreenHandlerBuilder> _logger;
-    private readonly IValidator<Screen> _screenValidator;
     private readonly IHandlerFactory<ScreenHandler> _screenHandlerFactory;
 
     private Func<Section, string, bool>? _answerValidation;
@@ -21,11 +19,9 @@ public sealed class ScreenHandlerBuilder : IScreenHandlerBuilder
     private System.Action _screenPause = null!;
     private Func<string, string> _titleDisplay = null!;
 
-    public ScreenHandlerBuilder(ILogger<ScreenHandlerBuilder> logger, IValidator<Screen> screenValidator,
-        IHandlerFactory<ScreenHandler> screenHandlerFactory)
+    public ScreenHandlerBuilder(ILogger<ScreenHandlerBuilder> logger, IHandlerFactory<ScreenHandler> screenHandlerFactory)
     {
         _logger = logger;
-        _screenValidator = screenValidator;
         _screenHandlerFactory = screenHandlerFactory;
 
         _backgroundColor = Console.BackgroundColor;
@@ -67,8 +63,7 @@ public sealed class ScreenHandlerBuilder : IScreenHandlerBuilder
         var json = file.ReadToEnd();
 
         var newScreen = JsonConvert.DeserializeObject<Screen>(json)!;
-        _screenValidator.RunValidations(newScreen);
-        _screenValidator.Register(newScreen);
+        RunValidations(newScreen);
 
         _screen = newScreen;
         return this;
@@ -114,5 +109,27 @@ public sealed class ScreenHandlerBuilder : IScreenHandlerBuilder
     {
         _titleDisplay = titleDisplay;
         return this;
+    }
+
+    private void RunValidations(Screen screen)
+    {
+        if (string.IsNullOrWhiteSpace(screen.Id))
+            throw new ScreenStructException("Config file 'id' is empty. You must specify a form id.");
+
+        if (string.IsNullOrWhiteSpace(screen.Title))
+            throw new ScreenStructException("Config file 'title' is empty. You must assing a title to a form");
+
+        if (!screen.Sections.Any())
+            throw new SectionValidationException("Config file 'sections' is empty. You must add at least 1 section to a form.");
+
+        // Section validations
+        foreach (var section in screen.Sections)
+        {
+            if (string.IsNullOrWhiteSpace(section.Label))
+                throw new SectionValidationException("Config file -> 'sections' -> 'label' is empty. You must add at least 1 section to a form.");
+
+            if (string.IsNullOrWhiteSpace(section.Input))
+                throw new SectionValidationException("Config file -> 'sections' -> 'input' is empty. You must add at least 1 section to a form.");
+        }
     }
 }
