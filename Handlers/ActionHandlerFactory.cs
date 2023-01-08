@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ConsoleScreenHandler.Handlers;
 
-public sealed class ActionHandlerFactory : IActionHandlerFactory
+public sealed class ActionHandlerFactory : IHandlerFactory<IActionHandler>
 {
     private readonly ILogger<ScreenHandlerBuilder> _logger;
     private readonly Func<IActionHandler> _factory;
@@ -13,10 +13,5 @@ public sealed class ActionHandlerFactory : IActionHandlerFactory
         _factory = factory;
     }
 
-    public IActionHandler Create(IEnumerable<Models.Action> actions)
-    {
-        var newActionHandler = _factory();
-        newActionHandler.Actions = actions;
-        return newActionHandler;
-    }
+    public IActionHandler Create() => _factory();
 }

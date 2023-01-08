@@ -2,10 +2,6 @@ namespace ConsoleScreenHandler.Helpers;
 
 public interface IHandlerHelpers
 {
-    Action ScreenPause { get; set; }
-    string ScreenTitle { get; set; }
-    Func<string, string> TitleDisplay { get; set; }
-
-    void ClearScreen();
-    void Pause();
+    void ClearScreen(Func<string, string> titleDisplay, string title);
+    void Pause(Action screenPause);
 }

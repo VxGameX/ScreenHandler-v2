@@ -6,24 +6,20 @@ public class HandlerHelpers : IHandlerHelpers
 {
     private readonly ILogger<HandlerHelpers> _logger;
 
-    public Action ScreenPause { get; set; } = null!;
-    public string ScreenTitle { get; set; } = null!;
-    public Func<string, string> TitleDisplay { get; set; } = null!;
-
     public HandlerHelpers(ILogger<HandlerHelpers> logger) => _logger = logger;
 
-    public void ClearScreen()
+    public void ClearScreen(Func<string, string> titleDisplay, string title)
     {
         Console.Clear();
         _logger.LogDebug("Console screen cleared.");
 
-        Console.WriteLine(TitleDisplay(ScreenTitle));
+        Console.WriteLine(titleDisplay(title));
         _logger.LogDebug("Title showed.");
     }
 
-    public void Pause()
+    public void Pause(Action screenPause)
     {
-        ScreenPause();
+        screenPause();
         _logger.LogDebug("Screen paused.");
     }
 }

@@ -1,3 +1,4 @@
+using ConsoleScreenHandler.Helpers;
 using ConsoleScreenHandler.Models;
 using ConsoleScreenHandler.Validators;
 using Microsoft.Extensions.Logging;
@@ -9,8 +10,7 @@ public sealed class ScreenHandlerBuilder : IScreenHandlerBuilder
 {
     private readonly ILogger<ScreenHandlerBuilder> _logger;
     private readonly IValidator<Screen> _screenValidator;
-    private readonly Func<IScreenHandler> _screenHandlerFactory;
-    private readonly IActionHandlerFactory _actionHandlerFactory;
+    private readonly IHandlerFactory<ScreenHandler> _screenHandlerFactory;
 
     private Func<Section, string, bool>? _answerValidation;
     private ConsoleColor _backgroundColor;
@@ -22,20 +22,19 @@ public sealed class ScreenHandlerBuilder : IScreenHandlerBuilder
     private Func<string, string> _titleDisplay = null!;
 
     public ScreenHandlerBuilder(ILogger<ScreenHandlerBuilder> logger, IValidator<Screen> screenValidator,
-        Func<IScreenHandler> screenHandlerFactory, IActionHandlerFactory actionHandlerFactory)
+        IHandlerFactory<ScreenHandler> screenHandlerFactory)
     {
         _logger = logger;
-        _backgroundColor = Console.BackgroundColor;
-        _foregroundColor = Console.ForegroundColor;
-
         _screenValidator = screenValidator;
         _screenHandlerFactory = screenHandlerFactory;
-        _actionHandlerFactory = actionHandlerFactory;
+
+        _backgroundColor = Console.BackgroundColor;
+        _foregroundColor = Console.ForegroundColor;
     }
 
     public IScreenHandler Build()
     {
-        var newScreenHandler = _screenHandlerFactory();
+        var newScreenHandler = _screenHandlerFactory.Create();
 
         newScreenHandler.Screen = _screen;
         newScreenHandler.BackgroundColor = _backgroundColor;

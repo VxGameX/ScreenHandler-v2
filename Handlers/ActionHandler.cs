@@ -14,7 +14,8 @@ public class ActionHandler : IActionHandler
 
     public IEnumerable<Models.Action> Actions { get; set; } = null!;
 
-    public ActionHandler(ILogger<ActionHandler> logger, IHandlerHelpers handlerHelper, IOptions<ConsoleScreenHandlerOptions> options)
+    public ActionHandler(ILogger<ActionHandler> logger, IHandlerHelpers handlerHelper,
+        IOptions<ConsoleScreenHandlerOptions> options)
     {
         _logger = logger;
         _handlerHelper = handlerHelper;
@@ -25,7 +26,7 @@ public class ActionHandler : IActionHandler
     {
         do
         {
-            _handlerHelper.ClearScreen();
+            // _handlerHelper.ClearScreen();
             foreach (var action in Actions)
             {
                 SetCurrentAction(action);
@@ -37,9 +38,9 @@ public class ActionHandler : IActionHandler
 
             if (!IsValidOption(selectedAction))
             {
-                _handlerHelper.ClearScreen();
+                // _handlerHelper.ClearScreen();
                 Console.Write("You must select an option.");
-                _handlerHelper.Pause();
+                // _handlerHelper.Pause();
                 continue;
             }
             RunAction(selectedAction);
@@ -54,9 +55,9 @@ public class ActionHandler : IActionHandler
 
         if (selectedAction is null)
         {
-            _handlerHelper.ClearScreen();
+            // _handlerHelper.ClearScreen();
             Console.Write("You must select a valid action.");
-            _handlerHelper.Pause();
+            // _handlerHelper.Pause();
             return;
         }
 

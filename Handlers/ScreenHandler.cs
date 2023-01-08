@@ -10,10 +10,9 @@ public sealed class ScreenHandler : IScreenHandler
 {
     private readonly ILogger<ScreenHandler> _logger;
     private readonly IHandlerHelpers _handlerHelpers;
+    private readonly IResult _result;
 
     private bool _isFormCompleted;
-    private IResult _result;
-
     public IActionHandler ActionHandler { get; set; } = null!;
     public ConsoleColor BackgroundColor { get; set; }
     public ConsoleColor ForegroundColor { get; set; }
@@ -31,14 +30,13 @@ public sealed class ScreenHandler : IScreenHandler
         _logger = logger;
         _handlerHelpers = handlerHelpers;
         _result = result;
+
         SectionHandler = DefaultSectionHandler();
         LabelOutput = DefaultLabelOutPut();
         AnswerValidation = DefaultAnswerValidation();
         NotValidAnswerResponse = DefaultNotValidAnswerResponse();
         ScreenPause = DefaultScreenPause();
         TitleDisplay = DefaultTitleDisplay();
-
-        ConfigureHelpers();
     }
 
     public void ShowScreen()
@@ -82,7 +80,10 @@ public sealed class ScreenHandler : IScreenHandler
             foreach (var section in sections)
                 do
                 {
-                    _handlerHelpers.ClearScreen();
+                    _handlerHelpers.ClearScreen(TitleDisplay, Screen.Title);
+
+                    _logger.LogDebug("Title showed.");
+
                     Console.Write(LabelOutput(section));
 
                     var answer = Console.ReadLine() ?? string.Empty;
@@ -93,27 +94,14 @@ public sealed class ScreenHandler : IScreenHandler
                         break;
                     }
 
-                    _handlerHelpers.ClearScreen();
+                    _handlerHelpers.ClearScreen(TitleDisplay, Screen.Title);
                     Console.Write(NotValidAnswerResponse(section, answer));
-                    _handlerHelpers.Pause();
+                    _handlerHelpers.Pause(ScreenPause);
                 }
                 while (true);
         });
 
         return defaultSectionHandler;
-    }
-
-    private void ConfigureHelpers()
-    {
-        _handlerHelpers.ScreenPause = ScreenPause;
-        _handlerHelpers.ScreenTitle = Screen.Title;
-        _handlerHelpers.TitleDisplay = TitleDisplay;
-    }
-
-    private void ShowTitle(Func<string, string> titleDisplay)
-    {
-        Console.WriteLine(titleDisplay(Screen.Title));
-        _logger.LogDebug("Title showed.");
     }
 
     private Func<string, string> DefaultTitleDisplay()
